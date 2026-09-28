@@ -154,14 +154,17 @@ new MutationObserver(queue).observe(main,{childList:true,subtree:true});queue()}
 {// Play the exit animation before a dialog actually closes (Отмена, Готово, Esc).
 const motion=matchMedia('(prefers-reduced-motion: reduce)');
 for(const dialog of document.querySelectorAll('dialog')){
-  const close=HTMLDialogElement.prototype.close;
+  const close=HTMLDialogElement.prototype.close,show=HTMLDialogElement.prototype.showModal;
+  // The page behind a sheet recedes slightly, like iOS card sheets.
+  dialog.showModal=function(){document.documentElement.classList.add('sheet-open');return show.call(this)};
   dialog.close=function(value){
     if(!this.open||this.classList.contains('closing'))return;
-    if(motion.matches)return close.call(this,value);
+    if(motion.matches){document.documentElement.classList.remove('sheet-open');return close.call(this,value)}
     this.classList.add('closing');
     let done=false;const finish=()=>{if(done)return;done=true;this.classList.remove('closing');close.call(this,value)};
     this.addEventListener('animationend',event=>{if(event.target===this)finish()},{once:true});
-    setTimeout(finish,400);
+    document.documentElement.classList.remove('sheet-open');
+    setTimeout(finish,560);
   };
   dialog.addEventListener('cancel',event=>{event.preventDefault();dialog.close()});
 }}

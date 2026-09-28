@@ -87,16 +87,18 @@ footer #navigation rect,footer #navigation path{fill:none}
 @media(prefers-reduced-motion:no-preference){
 dialog.closing{animation:disappear .15s ease-in forwards}
 @keyframes disappear{to{opacity:0;transform:translateY(12px)}}
-dialog[open]::backdrop{animation:backdrop-in .3s ease-out}
-dialog.closing::backdrop{animation:backdrop-out .26s ease-in forwards}
+dialog[open]::backdrop{animation:backdrop-in .5s ease-out}
+dialog.closing::backdrop{animation:backdrop-out .4s ease-in forwards}
 @keyframes backdrop-in{from{opacity:0}}
 @keyframes backdrop-out{to{opacity:0}}
 @media(max-width:600px){
 dialog{transform-origin:50% 100%}
-dialog[open]{animation:sheet-in .42s cubic-bezier(.22,1,.36,1)}
-dialog.closing{animation:sheet-out .26s cubic-bezier(.4,0,1,1) forwards}
-@keyframes sheet-in{from{transform:translateY(100%) scaleX(.9)}to{transform:none}}
-@keyframes sheet-out{from{transform:none}to{transform:translateY(100%) scaleX(.9)}}
+.app{transform-origin:50% 0;transition:transform .65s cubic-bezier(.2,.85,.25,1),border-radius .65s cubic-bezier(.2,.85,.25,1)}
+html.sheet-open .app{transform:translateY(12px) scale(.93);border-radius:22px}
+dialog[open]{animation:sheet-in .65s cubic-bezier(.2,.85,.25,1)}
+dialog.closing{animation:sheet-out .45s cubic-bezier(.4,0,.2,1) forwards}
+@keyframes sheet-in{from{transform:translateY(100%) scaleX(.82)}to{transform:none}}
+@keyframes sheet-out{from{transform:none}to{transform:translateY(100%) scaleX(.82)}}
 }}
 footer #navigation{grid-template-columns:repeat(3,1fr)}
 /* Settings screen */

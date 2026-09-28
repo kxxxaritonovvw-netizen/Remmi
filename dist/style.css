@@ -143,15 +143,15 @@ button.group-label{padding:6px 0;margin:-6px 0}
 @media(hover:hover){button.group-label:hover{color:#242424}}
 button.group-label[aria-expanded="true"]{color:#242424}
 /* main spans the full app width (side padding moves inside it), so rows and lines can reach the screen edges. */
-.app{--pad:30px}
-@media(max-width:600px){.app{--pad:22px}}
-@media(max-width:380px){.app{--pad:16px}}
+/* One side padding for all main layouts, matching the Header: 20px on every screen width. */
+.app{--pad:20px;padding-left:var(--pad);padding-right:var(--pad)}
+footer{padding-left:var(--pad);padding-right:var(--pad)}
 main{margin-inline:calc(-1*var(--pad));padding-inline:var(--pad)}
-/* Plans: full-width 32px section rows, separated by hairlines inset 16px from the screen edges; the row tints on hover. */
+/* Plans: full-width 32px section rows, separated by hairlines inset by the side padding; the row tints on hover. */
 .app[data-view="all"] #tasks>.group{margin:12px calc(-1*var(--pad)) 0}
 .app[data-view="all"] #tasks>.group{position:relative}
 .app[data-view="all"] #tasks>.group~.group{margin-top:0}
-.app[data-view="all"] #tasks>.group~.group:before{content:'';position:absolute;top:0;left:16px;right:16px;border-top:1px solid #E4E0E8;pointer-events:none}
+.app[data-view="all"] #tasks>.group~.group:before{content:'';position:absolute;top:0;left:var(--pad);right:var(--pad);border-top:1px solid #E4E0E8;pointer-events:none}
 .app[data-view="all"] .group-label{display:flex;align-items:center;width:100%;height:32px;min-height:32px;margin:0;padding:0 var(--pad);transition:background-color .15s ease,color .15s ease}
 @media(hover:hover){.app[data-view="all"] button.group-label:hover{background:#E9E5EC}}
 .app[data-view="all"] button.group-label:active{background:#E9E5EC}

@@ -99,7 +99,6 @@ dialog.closing{animation:sheet-out .26s cubic-bezier(.4,0,1,1) forwards}
 @keyframes sheet-out{from{transform:none}to{transform:translateY(100%) scaleX(.9)}}
 }}
 footer #navigation{grid-template-columns:repeat(3,1fr)}
-footer #navigation .knob{fill:none}
 /* Settings screen */
 .settings-card{padding:2px}
 .setting{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:56px;padding:10px 14px;position:relative;cursor:default}

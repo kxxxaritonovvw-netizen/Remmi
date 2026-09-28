@@ -42,3 +42,10 @@ $('completeEdit').onclick=()=>{const t=tasks.find(t=>t.id===editing);if(t)t.done
 render();
 setInterval(()=>{const marker=document.querySelector(".current-time");if(marker){const now=new Date();marker.style.top=`${(now.getHours()*60+now.getMinutes())*1.6}px`}},60000);
 {const f=document.querySelector('footer'),a=document.querySelector('.app');new ResizeObserver(()=>a.style.setProperty('--footer-h',`${f.offsetHeight-24}px`)).observe(f)}
+{// Scroll reveal: blocks near the bottom edge are smaller and lower, and settle into place as they scroll up.
+const main=document.querySelector('main'),motion=matchMedia('(prefers-reduced-motion: reduce)');let frame=0;
+const blocks=()=>main.querySelectorAll('#tasks>.group,#tasks>.task-group,#completedToggle,#completed>.task');
+function reveal(){frame=0;const box=main.getBoundingClientRect(),zone=Math.min(360,box.height*.5);for(const el of blocks()){if(motion.matches){el.style.transform=el.style.opacity='';continue}const top=el.getBoundingClientRect().top-(parseFloat(el.style.getPropertyValue('--shift'))||0);const p=Math.min(1,Math.max(0,(box.bottom-top)/zone)),e=p*p*(3-2*p);const shift=(1-e)*40;el.style.setProperty('--shift',shift);el.style.transform=e<1?`translateY(${shift}px) scale(${.88+.12*e})`:'';el.style.opacity=e<1?.35+.65*e:''}}
+const queue=()=>{if(!frame)frame=requestAnimationFrame(reveal)};
+main.addEventListener('scroll',queue,{passive:true});addEventListener('resize',queue);motion.addEventListener?.('change',queue);
+new MutationObserver(queue).observe(main,{childList:true,subtree:true});queue()}

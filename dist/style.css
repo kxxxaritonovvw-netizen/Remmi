@@ -53,3 +53,4 @@ footer .add{position:relative;pointer-events:auto}
 .task-group>.task{position:relative;border-bottom:0;padding:12px 14px;border-radius:22px;transition:background-color .15s ease}
 .task-group>.task+.task:before{content:'';position:absolute;top:0;left:14px;right:14px;border-top:1px solid #ededed;transition:opacity .15s ease}
 @media(hover:hover){.task-group>.task:hover{background:#F4F1F6}.task-group>.task:hover:before,.task-group>.task:hover+.task:before{opacity:0}}
+#tasks>.group,#tasks>.task-group,#completedToggle,#completed>.task{transform-origin:50% 0;will-change:transform,opacity}

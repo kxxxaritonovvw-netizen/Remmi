@@ -48,3 +48,8 @@ footer .add{position:relative;pointer-events:auto}
 .fade i:nth-child(5){display:none}
 @media(max-width:600px){footer{padding-left:22px;padding-right:22px}}
 @media(max-width:380px){footer{padding-left:16px;padding-right:16px}}
+/* Rows span the card with a 2px inset so each one can carry its own hover. */
+.task-group{padding:2px}
+.task-group>.task{position:relative;border-bottom:0;padding:12px 14px;border-radius:22px;transition:background-color .15s ease}
+.task-group>.task+.task:before{content:'';position:absolute;top:0;left:14px;right:14px;border-top:1px solid #ededed;transition:opacity .15s ease}
+@media(hover:hover){.task-group>.task:hover{background:#F4F1F6}.task-group>.task:hover:before,.task-group>.task:hover+.task:before{opacity:0}}

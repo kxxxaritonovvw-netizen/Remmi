@@ -41,3 +41,4 @@ document.querySelectorAll('[data-offset]').forEach(b=>b.addEventListener('click'
 $('completeEdit').onclick=()=>{const t=tasks.find(t=>t.id===editing);if(t)t.done=!t.done;$('editor').close();render()};
 render();
 setInterval(()=>{const marker=document.querySelector(".current-time");if(marker){const now=new Date();marker.style.top=`${(now.getHours()*60+now.getMinutes())*1.6}px`}},60000);
+{const f=document.querySelector('footer'),a=document.querySelector('.app');new ResizeObserver(()=>a.style.setProperty('--footer-h',`${f.offsetHeight-24}px`)).observe(f)}

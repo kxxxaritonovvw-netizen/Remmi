@@ -8,13 +8,15 @@ let tasks=[];
 const matches=t=>view==='all'||(view==='today'&&t.date&&t.date===day());
 function formatDate(d){return new Date(d+'T12:00:00').toLocaleDateString('ru-RU',{day:'numeric',month:'long',...(d.slice(0,4)!==day().slice(0,4)?{year:'numeric'}:{})})}
 function dateName(d){return d===day()?'Сегодня':d===day(1)?'Завтра':formatDate(d)}
-function row(t){const el=document.createElement('div');el.className='task'+(t.done?' done':'');const check=document.createElement('button');check.className='check';check.setAttribute('aria-label',(t.done?'Вернуть задачу: ':'Завершить задачу: ')+t.title);check.setAttribute('aria-pressed',String(t.done));check.innerHTML='<span class="circle"></span>';check.onclick=()=>{t.done=!t.done;render()};const body=document.createElement('button');body.className='task-body';const title=document.createElement('span');title.className='task-name';title.textContent=t.title;body.append(title);const meta=document.createElement('span');meta.className='task-meta';meta.textContent=t.date?[(t.date<day()?'Просрочено · ':'')+dateName(t.date),t.time?`${t.time}–${clockLabel(timeMinutes(t.time)+taskDuration(t))}`:''].filter(Boolean).join(' · '):'Без даты';body.append(meta);body.onclick=()=>openEditor(t);el.append(check,body);return el}
+const rowCache=new Map();
+function row(t){const sig=[t.title,t.done,t.date,t.time,t.duration,day()].join('\u0001'),hit=rowCache.get(t.id);if(hit?.sig===sig)return hit.el;const el=document.createElement('div');el.className='task'+(t.done?' done':'');const check=document.createElement('button');check.className='check';check.setAttribute('aria-label',(t.done?'Вернуть задачу: ':'Завершить задачу: ')+t.title);check.setAttribute('aria-pressed',String(t.done));check.innerHTML='<span class="circle"></span>';check.onclick=()=>{t.done=!t.done;render()};const body=document.createElement('button');body.className='task-body';const title=document.createElement('span');title.className='task-name';title.textContent=t.title;body.append(title);const meta=document.createElement('span');meta.className='task-meta';meta.textContent=t.date?[(t.date<day()?'Просрочено · ':'')+dateName(t.date),t.time?`${t.time}–${clockLabel(timeMinutes(t.time)+taskDuration(t))}`:''].filter(Boolean).join(' · '):'Без даты';body.append(meta);body.onclick=()=>openEditor(t);el.append(check,body);rowCache.set(t.id,{sig,el});return el}
 function addRow(date){const el=document.createElement('button');el.type='button';el.className='task add-task';el.innerHTML='<span class="check" aria-hidden="true"><span class="add-circle"><svg viewBox="0 0 12 12"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span></span>Добавить задачу';el.onclick=()=>openEditor(null,date);return el}
-function render(){document.querySelector(".app").dataset.view=view;const nav=$('navigation');nav.replaceChildren();for(const [key,label]of Object.entries(labels)){const b=document.createElement('button');b.innerHTML=navIcons[key];const cap=document.createElement('span');cap.textContent=navLabels[key];b.append(cap);b.setAttribute('aria-pressed',String(key===view));if(key===view)b.setAttribute('aria-current','page');b.onclick=()=>{view=key;render()};nav.append(b)}$('heading').textContent=labels[view];$('dateLabel').textContent=new Date().toLocaleDateString('ru-RU',{weekday:'long',day:'numeric',month:'long'});const active=tasks.filter(t=>matches(t)&&!t.done).sort((a,b)=>(a.date||'9999').localeCompare(b.date||'9999')||(a.time||'99').localeCompare(b.time||'99'));$('total').textContent=view==='settings'?'':active.length;$('dateLabel').hidden=view==='settings';$('tasks').replaceChildren();if(view==='settings'){renderSettings()}else if(view==='today'){renderTimeline(active)}else{let last=null,groupContainer=null;for(const t of active){if(!groupContainer||(view!=='today'&&t.date!==last)){if(view!=='today'){const h=document.createElement('h2');h.className='group';h.textContent=t.date?dateName(t.date):'Без даты';$('tasks').append(h)}groupContainer=document.createElement('div');groupContainer.className='task-group';groupContainer.dataset.date=t.date||'';$('tasks').append(groupContainer);last=t.date}groupContainer.append(row(t))}$('tasks').querySelectorAll('.task-group').forEach(g=>g.append(addRow(g.dataset.date)));if(!active.length){const empty=document.createElement('p');empty.className='empty';empty.textContent='Пока нет задач';const card=document.createElement('div');card.className='task-group';card.append(addRow(''));$('tasks').append(empty,card)}}const done=tasks.filter(t=>matches(t)&&t.done);$('completedToggle').hidden=!done.length||view==='today';$('completedToggle').textContent=`${showDone?'−':'+'} Завершённые · ${done.length}`;$('completed').replaceChildren(...(showDone&&view!=='today'?done.map(row):[]))}
+const navButtons=Object.keys(labels).map(key=>{const b=document.createElement('button');b.innerHTML=navIcons[key];const cap=document.createElement('span');cap.textContent=navLabels[key];b.append(cap);b.dataset.view=key;b.onclick=()=>{view=key;render()};$('navigation').append(b);return b});
+function render(){document.querySelector(".app").dataset.view=view;for(const b of navButtons){const on=b.dataset.view===view;b.setAttribute('aria-pressed',String(on));if(on)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')}$('heading').textContent=labels[view];$('dateLabel').textContent=new Date().toLocaleDateString('ru-RU',{weekday:'long',day:'numeric',month:'long'});const active=tasks.filter(t=>matches(t)&&!t.done).sort((a,b)=>(a.date||'9999').localeCompare(b.date||'9999')||(a.time||'99').localeCompare(b.time||'99'));$('total').textContent=view==='today'?active.length:'';$('dateLabel').hidden=view!=='today';$('brand').hidden=view!=='all';$('tasks').replaceChildren();if(view==='settings'){renderSettings()}else if(view==='today'){renderTimeline(active)}else{let last=null,groupContainer=null;for(const t of active){if(!groupContainer||(view!=='today'&&t.date!==last)){if(view!=='today'){const h=document.createElement('h2');h.className='group';h.textContent=t.date?dateName(t.date):'Без даты';$('tasks').append(h)}groupContainer=document.createElement('div');groupContainer.className='task-group';groupContainer.dataset.date=t.date||'';$('tasks').append(groupContainer);last=t.date}groupContainer.append(row(t))}$('tasks').querySelectorAll('.task-group').forEach(g=>g.append(addRow(g.dataset.date)));if(!active.length){const empty=document.createElement('p');empty.className='empty';empty.textContent='Пока нет задач';const card=document.createElement('div');card.className='task-group';card.append(addRow(''));$('tasks').append(empty,card)}}const done=tasks.filter(t=>matches(t)&&t.done);$('completedToggle').hidden=!done.length||view==='today';$('completedToggle').textContent=`${showDone?'−':'+'} Завершённые · ${done.length}`;$('completed').replaceChildren(...(showDone&&view!=='today'?done.map(row):[]))}
 function openEditor(t,preset){editing=t?.id||null;$('editorTitle').textContent=t?'Задача':'Новая задача';$('title').value=t?.title||'';$('date').value=t?.date||(t?'':preset??(view==='today'?day():''));$('time').value=t?.time||'';$('time').disabled=!$('date').value;$('delete').hidden=!t;$('completeEdit').hidden=!t;$('completeEdit').textContent=t?.done?'Вернуть в планы':'Отметить выполненной';$('endTime').value=t?.time?clockLabel(timeMinutes(t.time)+taskDuration(t)):'';syncEndTime();$('editor').showModal();setTimeout(()=>$('title').focus({preventScroll:true}),0)}
 $('cancel').onclick=()=>$('editor').close();$('completedToggle').onclick=()=>{showDone=!showDone;render()};$('date').onchange=()=>{$('time').disabled=!$('date').value;if(!$('date').value)$('time').value=''};
 document.querySelectorAll('[data-offset]').forEach(b=>b.onclick=()=>{$('date').value=day(Number(b.dataset.offset));$('time').disabled=false});$('clearDate').onclick=()=>{$('date').value='';$('time').value='';$('time').disabled=true};
-$('form').onsubmit=e=>{e.preventDefault();syncEndTime();const title=$('title').value.trim();if(!title){$('title').setCustomValidity('Введите название задачи');$('title').reportValidity();return}const data={title,date:$('date').value,time:$('date').value?$('time').value:'',duration:$('date').value&&$('time').value?((timeMinutes($('endTime').value)-timeMinutes($('time').value)+1440)%1440||1440):30};if(editing)Object.assign(tasks.find(t=>t.id===editing),data);else tasks.push({id:(crypto.randomUUID?.()||Array.from(crypto.getRandomValues(new Uint8Array(16)),v=>v.toString(16).padStart(2,"0")).join("")),done:false,...data});$('editor').close();if(!matches({...data}))view='all';render()};$('title').oninput=()=>$('title').setCustomValidity('');$('delete').onclick=()=>{tasks=tasks.filter(t=>t.id!==editing);$('editor').close();render()};$('timezone').textContent='Часовой пояс: '+Intl.DateTimeFormat().resolvedOptions().timeZone;
+$('form').onsubmit=e=>{e.preventDefault();syncEndTime();const title=$('title').value.trim();if(!title){$('title').setCustomValidity('Введите название задачи');$('title').reportValidity();return}const data={title,date:$('date').value,time:$('date').value?$('time').value:'',duration:$('date').value&&$('time').value?((timeMinutes($('endTime').value)-timeMinutes($('time').value)+1440)%1440||1440):30};if(editing)Object.assign(tasks.find(t=>t.id===editing),data);else tasks.push({id:(crypto.randomUUID?.()||Array.from(crypto.getRandomValues(new Uint8Array(16)),v=>v.toString(16).padStart(2,"0")).join("")),done:false,...data});$('editor').close();if(!matches({...data}))view='all';render()};$('title').oninput=()=>$('title').setCustomValidity('');$('delete').onclick=()=>{rowCache.delete(editing);tasks=tasks.filter(t=>t.id!==editing);$('editor').close();render()};$('timezone').textContent='Часовой пояс: '+Intl.DateTimeFormat().resolvedOptions().timeZone;
 if(document.modelContext?.registerTool){try{document.modelContext.registerTool({name:'open_task_editor',description:'Открыть форму новой задачи в прототипе, без сохранения.',inputSchema:{type:'object',properties:{},additionalProperties:false},annotations:{readOnlyHint:false},execute(input){if(!input||typeof input!=='object'||Object.keys(input).length)throw new Error('Ожидается пустой объект');openEditor();return{opened:true}}})}catch{}}
 
 const timeMinutes=value=>{const [h,m]=value.split(':').map(Number);return h*60+m};
@@ -65,6 +67,8 @@ function bindCalendarDrag(button,entry,scroll,canvas){
     if(drag.mode==='move'){drag.start=Math.max(Math.min(0,drag.rawStart),Math.min(1435,snap(drag.rawStart+delta)));drag.end=drag.start+(drag.rawEnd-drag.rawStart)}
     else if(drag.mode==='top')drag.start=Math.max(Math.min(0,drag.rawStart),Math.min(drag.rawEnd-15,snap(drag.rawStart+delta)));
     else drag.end=Math.min(1440,Math.max(drag.rawStart+15,snap(drag.rawEnd+delta)));
+    if(drag.start===drag.shownStart&&drag.end===drag.shownEnd)return;
+    drag.shownStart=drag.start;drag.shownEnd=drag.end;
     const visibleStart=Math.max(0,drag.start),visibleEnd=Math.min(1440,drag.end);
     button.style.top=`${visibleStart*pixelsPerMinute}px`;
     button.style.height=`${Math.max(1,(visibleEnd-visibleStart)*pixelsPerMinute-2)}px`;
@@ -80,7 +84,7 @@ function bindCalendarDrag(button,entry,scroll,canvas){
     if(!drag||event.pointerId!==drag.id)return;
     drag.lastY=event.clientY;
     if(!drag.active&&event.pointerType==='mouse'&&Math.hypot(event.clientX-drag.x,event.clientY-drag.y)>5)activate();
-    if(drag.active){event.preventDefault();update()}
+    if(drag.active)event.preventDefault();
   });
   function finish(commit){
     if(!drag)return;
@@ -110,7 +114,7 @@ function bindCalendarCreate(scroll,canvas){
   canvas.addEventListener('pointermove',event=>{
     if(!press||event.pointerId!==press.id)return;
     if(!press.dragging&&event.pointerType==='mouse'&&Math.abs(event.clientY-press.y)>5){press.dragging=true;canvas.setPointerCapture(event.pointerId);press.draft=draft(press)}
-    if(press.dragging){press.end=Math.min(1440,Math.max(press.start+15,Math.ceil(minuteAt(event.clientY)/15)*15));place(press.draft,press)}
+    if(press.dragging){const end=Math.min(1440,Math.max(press.start+15,Math.ceil(minuteAt(event.clientY)/15)*15));if(end!==press.end){press.end=end;place(press.draft,press)}}
   });
   canvas.addEventListener('pointerup',event=>{
     if(!press||event.pointerId!==press.id)return;
@@ -142,29 +146,36 @@ $('clearDate').addEventListener('click',syncEndTime);
 document.querySelectorAll('[data-offset]').forEach(b=>b.addEventListener('click',syncEndTime));
 $('completeEdit').onclick=()=>{const t=tasks.find(t=>t.id===editing);if(t)t.done=!t.done;$('editor').close();render()};
 render();
-setInterval(()=>{const marker=document.querySelector(".current-time");if(marker){const now=new Date();marker.style.top=`${(now.getHours()*60+now.getMinutes())*1.6}px`}},60000);
+(function clock(){const marker=document.querySelector(".current-time");if(marker){const now=new Date();marker.style.top=`${(now.getHours()*60+now.getMinutes())*1.6}px`}setTimeout(clock,60000-Date.now()%60000+20)})();
 {// Scroll reveal: blocks near the bottom edge are smaller and lower, and settle into place as they scroll up.
-const main=document.querySelector('main'),motion=matchMedia('(prefers-reduced-motion: reduce)');let frame=0;
-const blocks=()=>main.querySelectorAll('#tasks>.group,#tasks>.task-group,#completedToggle,#completed>.task');
-function reveal(){frame=0;const box=main.getBoundingClientRect(),zone=Math.min(360,box.height*.5);for(const el of blocks()){if(motion.matches){el.style.transform=el.style.opacity='';continue}const top=el.getBoundingClientRect().top-(parseFloat(el.style.getPropertyValue('--shift'))||0);const p=Math.min(1,Math.max(0,(box.bottom-top)/zone)),e=p*p*(3-2*p);const shift=(1-e)*40;el.style.setProperty('--shift',shift);el.style.transform=e<1?`translateY(${shift}px) scale(${.88+.12*e})`:'';el.style.opacity=e<1?.35+.65*e:''}}
+// Reads all positions first and writes afterwards, so a frame costs one layout however many blocks there are.
+const main=document.querySelector('main'),motion=matchMedia('(prefers-reduced-motion: reduce)');let frame=0,list=[];
+const shifts=new WeakMap();
+function reveal(){frame=0;const box=main.getBoundingClientRect(),zone=Math.min(360,box.height*.5);
+  const tops=motion.matches?null:list.map(el=>el.getBoundingClientRect().top-(shifts.get(el)||0));
+  list.forEach((el,i)=>{let e=1;if(tops){const p=Math.min(1,Math.max(0,(box.bottom-tops[i])/zone));e=p*p*(3-2*p)}
+    const shift=(1-e)*40;if(shifts.get(el)===shift)return;shifts.set(el,shift);
+    el.style.transform=e<1?`translateY(${shift}px) scale(${.88+.12*e})`:'';el.style.opacity=e<1?.35+.65*e:'';el.style.willChange=e<1?'transform,opacity':''})}
 const queue=()=>{if(!frame)frame=requestAnimationFrame(reveal)};
+const collect=()=>{list=[...main.querySelectorAll('#tasks>.group,#tasks>.task-group,#completedToggle,#completed>.task')];queue()};
 main.addEventListener('scroll',queue,{passive:true});addEventListener('resize',queue);motion.addEventListener?.('change',queue);
-new MutationObserver(queue).observe(main,{childList:true,subtree:true});queue()}
+new MutationObserver(collect).observe(main,{childList:true,subtree:true});collect()}
 {const f=document.querySelector('footer'),a=document.querySelector('.app');new ResizeObserver(()=>a.style.setProperty('--footer-h',`${f.offsetHeight-24}px`)).observe(f)}
 {// Play the exit animation before a dialog actually closes (Отмена, Готово, Esc).
 const motion=matchMedia('(prefers-reduced-motion: reduce)');
 for(const dialog of document.querySelectorAll('dialog')){
   const close=HTMLDialogElement.prototype.close,show=HTMLDialogElement.prototype.showModal;
   // The page behind a sheet recedes slightly, like iOS card sheets.
-  dialog.showModal=function(){document.documentElement.classList.add('sheet-open');this.openedAt=performance.now();return show.call(this)};
+  // Reopening mid-exit first completes the pending close, otherwise the page stays receded.
+  dialog.showModal=function(){this.finishClose?.();document.documentElement.classList.add('sheet-open','sheet-busy');this.openedAt=performance.now();return show.call(this)};
   dialog.close=function(value){
     if(!this.open||this.classList.contains('closing'))return;
-    if(motion.matches){document.documentElement.classList.remove('sheet-open');return close.call(this,value)}
+    if(motion.matches){document.documentElement.classList.remove('sheet-open','sheet-busy');return close.call(this,value)}
     this.classList.add('closing');
-    let done=false;const finish=()=>{if(done)return;done=true;this.classList.remove('closing');close.call(this,value)};
+    let done=false;const finish=this.finishClose=()=>{if(done)return;done=true;this.finishClose=null;this.classList.remove('closing');document.documentElement.classList.remove('sheet-busy');close.call(this,value)};
     this.addEventListener('animationend',event=>{if(event.target===this)finish()},{once:true});
     document.documentElement.classList.remove('sheet-open');
-    setTimeout(finish,560);
+    setTimeout(finish,450);
   };
   dialog.addEventListener('cancel',event=>{event.preventDefault();dialog.close()});
 }

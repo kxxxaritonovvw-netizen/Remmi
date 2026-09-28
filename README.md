@@ -27,7 +27,7 @@ $env:HOST = "192.168.1.100" # заменить своим IP
 npm run dev
 ```
 
-Демо в рамке 402 × 844 одной страницей: `npm run demo` → `demo-build/index.html`.
+Демо в рамке 402 × 760 одной страницей: `npm run demo` → `demo-build/index.html`.
 
 ## Статус
 

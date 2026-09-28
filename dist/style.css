@@ -33,24 +33,15 @@ footer{position:static;flex-shrink:0;margin-top:0;padding-top:16px;z-index:auto}
 .calendar-event.short strong{font-size:12px;line-height:16px}
 .sheet-head{flex-wrap:wrap}.field label{flex-shrink:0}
 @media(max-width:380px){.app{padding-left:16px;padding-right:16px}.timeline-scroll{padding-right:10px}.calendar-event{padding-left:5px;padding-right:5px}.field input{width:150px}}
-/* Floating action: content scrolls under a tinted, progressively blurred fade. */
-.app{position:relative}
-main{padding-bottom:var(--footer-h,140px)}
-footer{position:absolute;left:0;right:0;bottom:0;z-index:5;background:none;padding:56px 30px max(20px,env(safe-area-inset-bottom));pointer-events:none}
-footer .add{position:relative;pointer-events:auto}
-.fade{position:absolute;inset:0;pointer-events:none;overflow:hidden}
-.fade:after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,rgb(244 241 246/0) 0%,rgb(244 241 246/.08) 15%,rgb(244 241 246/.2) 30%,rgb(244 241 246/.36) 45%,rgb(244 241 246/.52) 60%,rgb(244 241 246/.66) 75%,rgb(244 241 246/.76) 90%,rgb(244 241 246/.8) 100%)}
-.fade i{position:absolute;inset:0}
-.fade i:nth-child(1){backdrop-filter:blur(.5px);-webkit-backdrop-filter:blur(.5px);mask:linear-gradient(to bottom,#0000 0%,#000 15%,#000 30%,#0000 45%)}
-.fade i:nth-child(2){backdrop-filter:blur(1px);-webkit-backdrop-filter:blur(1px);mask:linear-gradient(to bottom,#0000 15%,#000 30%,#000 50%,#0000 65%)}
-.fade i:nth-child(3){backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);mask:linear-gradient(to bottom,#0000 35%,#000 50%,#000 70%,#0000 85%)}
-.fade i:nth-child(4){backdrop-filter:blur(3px) saturate(1.2);-webkit-backdrop-filter:blur(3px) saturate(1.2);mask:linear-gradient(to bottom,#0000 55%,#000 70%)}
-.fade i:nth-child(5){display:none}
-@media(max-width:600px){footer{padding-left:22px;padding-right:22px}}
-@media(max-width:380px){footer{padding-left:16px;padding-right:16px}}
+main{padding-bottom:max(32px,env(safe-area-inset-bottom))}
 /* Rows span the card with a 2px inset so each one can carry its own hover. */
 .task-group{padding:2px}
 .task-group>.task{position:relative;border-bottom:0;padding:12px 14px;border-radius:22px;transition:background-color .15s ease}
 .task-group>.task+.task:before{content:'';position:absolute;top:0;left:14px;right:14px;border-top:1px solid #ededed;transition:opacity .15s ease}
 @media(hover:hover){.task-group>.task:hover{background:#F4F1F6}.task-group>.task:hover:before,.task-group>.task:hover+.task:before{opacity:0}}
 #tasks>.group,#tasks>.task-group,#completedToggle,#completed>.task{transform-origin:50% 0;will-change:transform,opacity}
+/* Inline "add task" row at the bottom of every card. */
+.add-task{width:100%;min-height:56px;align-items:center;text-align:left;color:#777;font-size:16px}
+.add-task .check{display:flex;align-items:center;justify-content:center;padding:0 5px}
+.add-circle{width:22px;height:22px;border-radius:50%;background:#E6E3E9;color:#6f6a74;display:grid;place-items:center}
+.add-circle svg{width:12px;height:12px}

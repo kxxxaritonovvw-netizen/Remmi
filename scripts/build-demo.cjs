@@ -12,7 +12,7 @@ if(!body.includes('class="app"'))throw new Error('app markup not found');
 const demoCss=`
 html,body{height:auto;min-height:100%}
 body{display:grid;place-items:center;padding-inline:16px;padding-block:24px;box-sizing:border-box}
-.frame{position:relative;width:402px;height:844px;overflow:hidden;background:#F4F1F6;box-shadow:0 0 0 1px #CFC8D6,0 20px 50px rgb(52 38 66/.16);zoom:var(--z,1)}
+.frame{position:relative;width:402px;height:844px;overflow:clip;background:#F4F1F6;box-shadow:0 0 0 1px #CFC8D6,0 20px 50px rgb(52 38 66/.16);zoom:var(--z,1)}
 .frame .app{height:100%;max-width:none;margin:0}
 .frame dialog{position:absolute;inset:auto 0 0 0;margin:0;z-index:20;max-height:90%}
 .frame:after{content:'';position:absolute;inset:0;background:#0005;opacity:0;pointer-events:none;z-index:15;transition:opacity .45s ease}

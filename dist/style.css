@@ -64,3 +64,11 @@ footer #navigation{position:relative;pointer-events:auto}
 .calendar-event.dragging{cursor:grabbing;z-index:6;box-shadow:0 8px 22px #49345826;outline:1px solid #a093ab;background:#E5DFEB}
 .calendar-origin{position:absolute;border:1px dashed #bdb3c5;border-radius:6px;background:rgb(234 230 237 / 35%);pointer-events:none;z-index:1}
 .timeline-scroll.is-dragging{cursor:grabbing;scroll-behavior:auto}
+/* Bottom tab bar: icon above caption, no segmented pill. */
+footer{padding-top:40px;padding-bottom:max(8px,env(safe-area-inset-bottom))}
+footer #navigation{height:auto;background:none;padding:0;gap:0;border-radius:0}
+footer #navigation button{height:auto;min-height:52px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:6px 0;border:0;background:none;color:#9C96A2;font-size:11px;font-weight:500;letter-spacing:.1px;transition:color .15s ease}
+footer #navigation button[aria-pressed="true"]{background:none;border:0;color:#242424}
+footer #navigation svg{width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+footer #navigation circle{fill:currentColor;stroke:none}
+footer #navigation rect,footer #navigation path{fill:none}

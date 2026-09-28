@@ -1,7 +1,7 @@
 // Header in the component showcase: its props, variants and playground defaults.
 Showcase.register({
   name:'Header',
-  description:'Шапка всех табов. Высота 50px, отступы 20px от краёв экрана, заголовок 20px semibold бордовым. Над заголовком необязательный второй уровень caption (12px). Справа необязательное поле aside, например число задач.',
+  description:'Шапка всех табов. Высота 50px, отступы 20px от краёв экрана, заголовок 20px semibold жёлтым. Над заголовком необязательный второй уровень caption (12px). Справа необязательное поле aside, например число задач.',
   files:['components/header.js','components/header.css'],
   usage:"const header=Header(document.querySelector('.header'));\nheader.render({caption:'Вторник, 29 сентября',title:'Сегодня',aside:'3'});",
   props:[

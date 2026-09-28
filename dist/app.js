@@ -12,7 +12,7 @@ const rowCache=new Map();
 // context: 'day' inside a single-day section (time only), 'overdue' under Просрочено (no repeated label).
 function row(t,context=''){const sig=[t.title,t.done,t.date,t.time,t.duration,day(),context].join('\u0001'),hit=rowCache.get(t.id);if(hit?.sig===sig)return hit.el;const el=document.createElement('div');el.className='task'+(t.done?' done':'');const check=document.createElement('button');check.className='check';check.setAttribute('aria-label',(t.done?'Вернуть задачу: ':'Завершить задачу: ')+t.title);check.setAttribute('aria-pressed',String(t.done));check.innerHTML='<span class="circle"></span>';check.onclick=()=>{t.done=!t.done;render()};const body=document.createElement('button');body.className='task-body';const title=document.createElement('span');title.className='task-name';title.textContent=t.title;body.append(title);const time=t.time?`${t.time}–${clockLabel(timeMinutes(t.time)+taskDuration(t))}`:'';const meta=document.createElement('span');meta.className='task-meta';meta.textContent=context==='day'?time:t.date?[(t.date<day()&&context!=='overdue'?'Просрочено · ':'')+dateName(t.date),time].filter(Boolean).join(' · '):context?'':'Без даты';if(meta.textContent)body.append(meta);body.onclick=()=>openEditor(t);el.append(check,body);rowCache.set(t.id,{sig,el});return el}
 function addRow(date){const el=document.createElement('button');el.type='button';el.className='task add-task';el.innerHTML='<span class="check" aria-hidden="true"><span class="add-circle"><svg viewBox="0 0 12 12"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span></span>Добавить задачу';el.onclick=()=>openEditor(null,date);return el}
-const navButtons=Object.keys(labels).map(key=>{const b=document.createElement('button');b.innerHTML=navIcons[key];const cap=document.createElement('span');cap.textContent=navLabels[key];b.append(cap);b.dataset.view=key;b.onclick=()=>{view=key;render()};$('navigation').append(b);return b});
+const navButtons=Object.keys(labels).map(key=>{const b=document.createElement('button');b.innerHTML=navIcons[key];const cap=document.createElement('span');cap.textContent=navLabels[key];b.append(cap);b.dataset.view=key;b.onclick=()=>{composing=null;view=key;render()};$('navigation').append(b);return b});
 function render(){document.querySelector(".app").dataset.view=view;for(const b of navButtons){const on=b.dataset.view===view;b.setAttribute('aria-pressed',String(on));if(on)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')}$('heading').textContent=labels[view];$('dateLabel').textContent=new Date().toLocaleDateString('ru-RU',{weekday:'long',day:'numeric',month:'long'});const active=tasks.filter(t=>matches(t)&&!t.done).sort((a,b)=>(a.date||'9999').localeCompare(b.date||'9999')||(a.time||'99').localeCompare(b.time||'99'));$('total').textContent=view==='today'?active.length:'';$('dateLabel').hidden=view!=='today';$('brand').hidden=view!=='all';$('heading').hidden=view==='all';$('tasks').replaceChildren();if(view==='settings'){renderSettings()}else if(view==='today'){renderTimeline(active)}else renderPlans(active);const done=tasks.filter(t=>matches(t)&&t.done);$('completedToggle').hidden=!done.length||view==='today';$('completedToggle').textContent=`${showDone?'−':'+'} Завершённые · ${done.length}`;$('completed').replaceChildren(...(showDone&&view!=='today'?done.map(row):[]))}
 function renderPlans(active){
   // Timeline of sections like Apple Reminders' Scheduled list: days of the coming week, the rest of the month, months, years.
@@ -29,12 +29,46 @@ function renderPlans(active){
   for(const section of sections){
     const items=active.filter(section.test||(t=>t.date&&t.date>=section.from&&t.date<=section.to));
     if(!items.length&&section.hideEmpty)continue;
-    const h=document.createElement('h2');h.className='group';h.textContent=section.title;
-    if(section.note){const note=document.createElement('span');note.className='group-note';note.textContent=section.note;h.append(note)}
-    const card=document.createElement('div');card.className='task-group'+(items.length?'':' bare');card.append(...items.map(t=>row(t,section.context)));
-    if(section.add!==undefined)card.append(addRow(section.add));
-    $('tasks').append(h,card)}
+    // Tapping a heading opens an inline composer under it (no modal); Просрочено has no date to add to.
+    const key=section.add===undefined?null:section.add||'none',open=key!==null&&composing===key;
+    const h=document.createElement('h2');h.className='group';
+    const label=document.createElement(key===null?'span':'button');label.className='group-label';label.textContent=section.title;
+    if(section.note){const note=document.createElement('span');note.className='group-note';note.textContent=section.note;label.append(note)}
+    if(key!==null){label.type='button';label.setAttribute('aria-expanded',String(open));label.onclick=()=>openComposer(key)}
+    h.append(label);$('tasks').append(h);
+    if(!items.length&&!open)continue;
+    const card=document.createElement('div');card.className='task-group';
+    if(open)card.append(composer(section));
+    card.append(...items.map(t=>row(t,section.context)));$('tasks').append(card)}
 }
+let composing=null;
+function composer(section){
+  const el=document.createElement('form');el.className='task composer';el.dataset.date=section.add;
+  el.innerHTML='<span class="check" aria-hidden="true"><span class="circle"></span></span><div class="composer-body"><input class="composer-title" placeholder="Новая задача" maxlength="250" enterkeyhint="done" aria-label="Название задачи"><div class="composer-meta"><input class="composer-date" type="date" aria-label="Дата"><input class="composer-time" type="time" aria-label="Время"></div></div>';
+  const date=el.querySelector('.composer-date'),time=el.querySelector('.composer-time');
+  if(section.context==='day')date.hidden=true;else date.value=section.add;
+  const syncTime=()=>{time.disabled=!(date.hidden||date.value);if(time.disabled)time.value=''};date.oninput=date.onchange=syncTime;syncTime();
+  el.onsubmit=event=>{event.preventDefault();commitComposer(true)};
+  el.addEventListener('keydown',event=>{if(event.key==='Escape'){event.preventDefault();composing=null;render()}});
+  return el;
+}
+function focusComposer(){document.querySelector('.composer-title')?.focus({preventScroll:true})}
+function openComposer(key){
+  if(composing===key){focusComposer();return}
+  commitComposer(false);composing=key;render();
+  // Focus in the same tap, so mobile keyboards open.
+  focusComposer();document.querySelector('.composer')?.scrollIntoView({block:'nearest'});
+}
+function commitComposer(keepOpen){
+  const el=document.querySelector('.composer');if(!el){composing=null;return}
+  const title=el.querySelector('.composer-title').value.trim(),date=el.querySelector('.composer-date').hidden?el.dataset.date:el.querySelector('.composer-date').value,time=date?el.querySelector('.composer-time').value:'';
+  if(title)tasks.push({id:(crypto.randomUUID?.()||String(Date.now()+Math.random())),done:false,title,date,time,duration:30});
+  if(!keepOpen)composing=null;
+  if(title||!keepOpen)render();
+  if(keepOpen)focusComposer();
+}
+// A tap anywhere outside the composer saves what was typed and closes it.
+document.addEventListener('pointerdown',event=>{if(composing!==null&&!event.target.closest('.composer,.group-label'))commitComposer(false)},true);
 function openEditor(t,preset){editing=t?.id||null;$('editorTitle').textContent=t?'Задача':'Новая задача';$('title').value=t?.title||'';$('date').value=t?.date||(t?'':preset??(view==='today'?day():''));$('time').value=t?.time||'';$('time').disabled=!$('date').value;$('delete').hidden=!t;$('completeEdit').hidden=!t;$('completeEdit').textContent=t?.done?'Вернуть в планы':'Отметить выполненной';$('endTime').value=t?.time?clockLabel(timeMinutes(t.time)+taskDuration(t)):'';syncEndTime();$('editor').showModal();setTimeout(()=>$('title').focus({preventScroll:true}),0)}
 $('cancel').onclick=()=>$('editor').close();$('completedToggle').onclick=()=>{showDone=!showDone;render()};$('date').onchange=()=>{$('time').disabled=!$('date').value;if(!$('date').value)$('time').value=''};
 document.querySelectorAll('[data-offset]').forEach(b=>b.onclick=()=>{$('date').value=day(Number(b.dataset.offset));$('time').disabled=false});$('clearDate').onclick=()=>{$('date').value='';$('time').value='';$('time').disabled=true};

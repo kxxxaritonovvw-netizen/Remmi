@@ -144,9 +144,18 @@ textarea{padding:16px 0 12px;font-size:21px;line-height:1.35}
 button.group-label{padding:6px 0;margin:-6px 0}
 @media(hover:hover){button.group-label:hover{color:#242424}}
 button.group-label[aria-expanded="true"]{color:#242424}
-/* Plans: a hairline separates each section from the previous one. */
-.app[data-view="all"] #tasks>.group{margin:20px 0 12px}
-.app[data-view="all"] #tasks>.group~.group{margin-top:16px;padding-top:16px;border-top:1px solid #E4E0E8}
+/* main spans the full app width (side padding moves inside it), so rows and lines can reach the screen edges. */
+.app{--pad:30px}
+@media(max-width:600px){.app{--pad:22px}}
+@media(max-width:380px){.app{--pad:16px}}
+main{margin-inline:calc(-1*var(--pad));padding-inline:var(--pad)}
+/* Plans: full-width 32px section rows, separated by full-width hairlines; the row tints on hover. */
+.app[data-view="all"] #tasks>.group{margin:12px calc(-1*var(--pad)) 0}
+.app[data-view="all"] #tasks>.group~.group{margin-top:0;border-top:1px solid #E4E0E8}
+.app[data-view="all"] .group-label{display:flex;align-items:center;width:100%;height:32px;min-height:32px;margin:0;padding:0 var(--pad);transition:background-color .15s ease,color .15s ease}
+@media(hover:hover){.app[data-view="all"] button.group-label:hover{background:#E9E5EC}}
+.app[data-view="all"] button.group-label:active{background:#E9E5EC}
+.app[data-view="all"] #tasks>.task-group{margin:4px 0 12px}
 .composer{margin:0}
 .composer-body{flex:1;min-width:0;padding:8px 0;display:flex;flex-direction:column;gap:6px}
 .composer-title{width:100%;border:0;background:none;padding:0;font-size:16px;line-height:1.4;outline:none}

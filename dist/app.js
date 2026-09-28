@@ -57,7 +57,20 @@ function openComposer(key){
   if(composing===key){focusComposer();return}
   commitComposer(false);composing=key;render();
   // Focus in the same tap, so mobile keyboards open.
-  focusComposer();document.querySelector('.composer')?.scrollIntoView({block:'nearest'});
+  focusComposer();dropIn(document.querySelector('.composer'));
+}
+// The composer drops out from under its heading: height opens from zero (so sections below slide down)
+// while the content slides down into place. A new card animates whole; a row added to a card animates alone.
+function dropIn(form){
+  if(!form||matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  const card=form.parentElement,target=card.children.length===1?card:form,cs=getComputedStyle(target),h=target.offsetHeight;
+  const ease='cubic-bezier(.32,.72,0,1)',duration=420,box=['marginTop','marginBottom','paddingTop','paddingBottom','minHeight'];
+  const from={height:'0px'},to={height:`${h}px`};for(const k of box){from[k]='0px';to[k]=cs[k]}
+  target.style.overflow='hidden';
+  const open=target.animate([from,to],{duration,easing:ease});
+  form.animate([{transform:`translateY(${-Math.round(h*.6)}px)`,opacity:0},{transform:'none',opacity:1}],{duration,easing:ease});
+  let settled=false;const settle=()=>{if(settled)return;settled=true;target.style.overflow='';if(form.isConnected)form.scrollIntoView({block:'nearest'})};
+  open.onfinish=open.oncancel=settle;setTimeout(settle,duration+80);
 }
 function commitComposer(keepOpen){
   const el=document.querySelector('.composer');if(!el){composing=null;return}

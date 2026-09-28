@@ -1,1 +1,1 @@
-{"name":"remmi","private":true,"version":"0.1.0","scripts":{"dev":"node server.cjs","check":"node --check dist/app.js && node --check dist/components/header.js","demo":"node scripts/build-demo.cjs"},"engines":{"node":">=18"}}
+{"name":"remmi","private":true,"version":"0.1.0","scripts":{"dev":"node server.cjs","check":"node --check dist/app.js && node --check dist/showcase.js && for f in dist/components/*.js; do node --check \"$f\" || exit 1; done","demo":"node scripts/build-demo.cjs","showcase":"node scripts/build-showcase.cjs"},"engines":{"node":">=18"}}

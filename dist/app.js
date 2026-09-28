@@ -49,36 +49,58 @@ function composer(section){
   if(section.context==='day')date.hidden=true;else date.value=section.add;
   const syncTime=()=>{time.disabled=!(date.hidden||date.value);if(time.disabled)time.value=''};date.oninput=date.onchange=syncTime;syncTime();
   el.onsubmit=event=>{event.preventDefault();commitComposer(true)};
-  el.addEventListener('keydown',event=>{if(event.key==='Escape'){event.preventDefault();composing=null;render()}});
+  el.addEventListener('keydown',event=>{if(event.key==='Escape'){event.preventDefault();closeComposer(false)}});
   return el;
 }
 function focusComposer(){document.querySelector('.composer-title')?.focus({preventScroll:true})}
 function openComposer(key){
   if(composing===key){focusComposer();return}
-  commitComposer(false);composing=key;render();
+  // Switching sections closes the old composer instantly; only the new one animates.
+  commitComposer(false,true);composing=key;render();
   // Focus in the same tap, so mobile keyboards open.
   focusComposer();dropIn(document.querySelector('.composer'));
 }
-// The composer drops out from under its heading: height opens from zero (so sections below slide down)
-// while the content slides down into place. A new card animates whole; a row added to a card animates alone.
-function dropIn(form){
-  if(!form||matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+// The composer drops out from under its heading and folds back under it on close: height runs to/from zero
+// (so sections below slide), while the content slides vertically. A card holding only the composer animates
+// whole; a composer row inside a card with tasks animates alone.
+const reducedMotion=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
+function foldComposer(form,opening,done){
   const card=form.parentElement,target=card.children.length===1?card:form,cs=getComputedStyle(target),h=target.offsetHeight;
-  const ease='cubic-bezier(.32,.72,0,1)',duration=420,box=['marginTop','marginBottom','paddingTop','paddingBottom','minHeight'];
-  const from={height:'0px'},to={height:`${h}px`};for(const k of box){from[k]='0px';to[k]=cs[k]}
+  const duration=opening?420:320,easing=opening?'cubic-bezier(.32,.72,0,1)':'cubic-bezier(.4,0,.2,1)';
+  const shut={height:'0px'},full={height:`${h}px`};
+  for(const k of ['marginTop','marginBottom','paddingTop','paddingBottom','minHeight']){shut[k]='0px';full[k]=cs[k]}
+  const hidden={transform:`translateY(${-Math.round(h*.6)}px)`,opacity:0},shown={transform:'none',opacity:1};
   target.style.overflow='hidden';
-  const open=target.animate([from,to],{duration,easing:ease});
-  form.animate([{transform:`translateY(${-Math.round(h*.6)}px)`,opacity:0},{transform:'none',opacity:1}],{duration,easing:ease});
-  let settled=false;const settle=()=>{if(settled)return;settled=true;target.style.overflow='';if(form.isConnected)form.scrollIntoView({block:'nearest'})};
-  open.onfinish=open.oncancel=settle;setTimeout(settle,duration+80);
+  const fold=target.animate(opening?[shut,full]:[full,shut],{duration,easing,fill:opening?'none':'forwards'});
+  form.animate(opening?[hidden,shown]:[shown,hidden],{duration,easing,fill:opening?'none':'forwards'});
+  // Animation events can be skipped in a background tab, so a timer backs up the finish handler.
+  let settled=false;const settle=()=>{if(settled)return;settled=true;if(opening)target.style.overflow='';done?.()};
+  fold.onfinish=fold.oncancel=settle;setTimeout(settle,duration+80);
 }
-function commitComposer(keepOpen){
-  const el=document.querySelector('.composer');if(!el){composing=null;return}
+function dropIn(form){
+  if(!form||reducedMotion())return;
+  foldComposer(form,true,()=>{if(form.isConnected)form.scrollIntoView({block:'nearest'})});
+}
+// Close without a new task: fold the composer away, then redraw. With a typed title the task takes its place at once.
+function closeComposer(save,instant=false){
+  const el=document.querySelector('.composer');composing=null;
+  if(!el){render();return}
+  if(el.dataset.closing)return;
+  if(save&&el.querySelector('.composer-title').value.trim()){addFromComposer(el);render();return}
+  if(instant||reducedMotion()){render();return}
+  el.dataset.closing='1';el.querySelector('.composer-title').blur();
+  foldComposer(el,false,()=>{if(el.isConnected)render()});
+}
+function addFromComposer(el){
   const title=el.querySelector('.composer-title').value.trim(),date=el.querySelector('.composer-date').hidden?el.dataset.date:el.querySelector('.composer-date').value,time=date?el.querySelector('.composer-time').value:'';
   if(title)tasks.push({id:(crypto.randomUUID?.()||String(Date.now()+Math.random())),done:false,title,date,time,duration:30});
-  if(!keepOpen)composing=null;
-  if(title||!keepOpen)render();
-  if(keepOpen)focusComposer();
+  return title;
+}
+function commitComposer(keepOpen,instant=false){
+  if(!keepOpen){closeComposer(true,instant);return}
+  const el=document.querySelector('.composer');if(!el)return;
+  if(addFromComposer(el))render();
+  focusComposer();
 }
 // A tap anywhere outside the composer saves what was typed and closes it.
 document.addEventListener('pointerdown',event=>{if(composing!==null&&!event.target.closest('.composer,.group-label'))commitComposer(false)},true);

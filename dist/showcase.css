@@ -60,3 +60,20 @@ body{margin:0;background:var(--canvas);color:var(--ink);font:15px/1.5 var(--ui)}
   .sc-nav ul{display:flex;flex-wrap:wrap;gap:6px}
   .sc-main{padding-inline:16px;padding-block:24px 48px}
 }
+
+/* Main component: dashed accent outline, padding zones, height ruler and a measured spec. */
+.sc-frame__body{display:flex;align-items:flex-start;gap:8px;max-width:100%}
+.sc-main-comp{display:flex;flex-wrap:wrap;gap:24px;align-items:flex-start}
+.sc-main-comp__frame{min-width:0;max-width:100%}
+.sc-frame--main .sc-frame__label{color:var(--accent)}
+.sc-frame--main .sc-frame__screen{box-shadow:none;outline:1.5px dashed var(--accent);outline-offset:3px}
+.sc-redline{position:absolute;inset:0 0 auto 0;pointer-events:none}
+.sc-redline__pad{position:absolute;top:0;bottom:0;display:grid;place-items:center;background:repeating-linear-gradient(135deg,rgb(224 64 96/.16) 0 4px,rgb(224 64 96/.06) 4px 8px)}
+.sc-redline__pad--left{left:0}.sc-redline__pad--right{right:0}
+.sc-redline__pad span,.sc-ruler span{font:600 10px var(--mono);color:#C2334F;font-variant-numeric:tabular-nums}
+.sc-ruler{flex-shrink:0;width:26px;display:grid;place-items:center;border-block:1px solid #C2334F;position:relative}
+.sc-ruler:before{content:'';position:absolute;top:0;bottom:0;left:50%;border-left:1px solid #C2334F}
+.sc-ruler span{position:relative;background:var(--canvas);padding:2px 0}
+.sc-spec{margin:0;display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px 20px;padding:16px;min-width:min(260px,100%);background:var(--panel);border:1px solid var(--line);border-radius:12px;font-size:14px}
+.sc-spec dt{color:var(--muted)}
+.sc-spec dd{margin:0;font:13px var(--mono);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}

@@ -8,6 +8,11 @@ Showcase.register({
     {name:'title',type:'string',description:'Заголовок. Длинный обрезается многоточием.',default:'Remmi'},
     {name:'aside',type:'string',description:'Текст справа. Пустая строка скрывает поле.',default:''}
   ],
+  // Extra rows for the main component's spec, measured from the rendered instance.
+  spec:[
+    {label:'Заголовок',value:(root,{hex})=>{const cs=getComputedStyle(root.querySelector('.header__title'));return `${cs.fontSize} · ${cs.fontWeight} · ${hex(cs.color)}`}},
+    {label:'Aside',value:(root,{hex})=>{const cs=getComputedStyle(root.querySelector('.header__aside'));return `${cs.fontSize} · ${hex(cs.color)}`}}
+  ],
   variants:[
     {name:'Планы',props:{title:'Remmi'}},
     {name:'Календарь',props:{title:'Сегодня',aside:'3'}},

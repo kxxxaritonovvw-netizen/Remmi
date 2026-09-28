@@ -19,7 +19,7 @@ function renderPlans(active){
   const today=day(),iso=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
   const cap=text=>text[0].toUpperCase()+text.slice(1),at=(y,m,d)=>new Date(y,m,d,12);
   const sections=[{title:'Просрочено',test:t=>t.date&&t.date<today,hideEmpty:true,context:'overdue'}];
-  for(let i=0;i<7;i++){const d=day(i),date=new Date(d+'T12:00:00');sections.push({title:i===0?'Сегодня':i===1?'Завтра':cap(date.toLocaleDateString('ru-RU',{weekday:'long'})),from:d,to:d,add:d,context:'day'})}
+  for(let i=0;i<7;i++){const d=day(i),date=new Date(d+'T12:00:00');sections.push({title:i===0?'Сегодня':i===1?'Завтра':cap(date.toLocaleDateString('ru-RU',{weekday:'long'})),from:d,to:d,add:d,context:'day',today:i===0})}
   const next=new Date(day(7)+'T12:00:00'),year=next.getFullYear();
   for(let m=next.getMonth();m<12;m++){const first=m===next.getMonth()?next:at(year,m,1),month=at(year,m,1).toLocaleDateString('ru-RU',{month:'long'});
     sections.push({title:first.getDate()===1?cap(month):'Остаток '+first.toLocaleDateString('ru-RU',{day:'numeric',month:'long'}).replace(/^\d+\s/,''),from:iso(first),to:iso(at(year,m+1,0)),add:iso(first)})}
@@ -31,7 +31,7 @@ function renderPlans(active){
     if(!items.length&&section.hideEmpty)continue;
     // Tapping a heading opens an inline composer under it (no modal); Просрочено has no date to add to.
     const key=section.add===undefined?null:section.add||'none',open=key!==null&&composing===key;
-    const h=document.createElement('h2');h.className='group';
+    const h=document.createElement('h2');h.className='group'+(section.today?' group-today':'');
     const label=document.createElement(key===null?'span':'button');label.className='group-label';label.textContent=section.title;
     if(key!==null){label.type='button';label.setAttribute('aria-expanded',String(open));label.onclick=()=>openComposer(key)}
     h.append(label);$('tasks').append(h);

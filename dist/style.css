@@ -167,3 +167,5 @@ main{margin-inline:calc(-1*var(--pad));padding-inline:var(--pad)}
 .composer-meta input:disabled{opacity:.45}
 .composer .circle{border-style:dashed}
 @media(hover:hover){.task-group>.composer:hover{background:none}}
+/* "Сегодня" leads the Plans list: 1.5× the section heading size, semibold. */
+.app[data-view="all"] #tasks>.group-today{font-size:21px;font-weight:600;color:#242424}

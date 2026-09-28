@@ -49,3 +49,4 @@ function reveal(){frame=0;const box=main.getBoundingClientRect(),zone=Math.min(3
 const queue=()=>{if(!frame)frame=requestAnimationFrame(reveal)};
 main.addEventListener('scroll',queue,{passive:true});addEventListener('resize',queue);motion.addEventListener?.('change',queue);
 new MutationObserver(queue).observe(main,{childList:true,subtree:true});queue()}
+{const f=document.querySelector('footer'),a=document.querySelector('.app');new ResizeObserver(()=>a.style.setProperty('--footer-h',`${f.offsetHeight-24}px`)).observe(f)}

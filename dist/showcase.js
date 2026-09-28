@@ -32,7 +32,7 @@ const Showcase=(()=>{
 
     // Main component: default props, measured redlines and spec, like the ◆ master in Figma.
     const main=el('div','sc-block');main.append(el('h3','sc-block__title','Главный компонент'));
-    const mf=frame(402,`◆ ${c.name}`);mf.wrap.classList.add('sc-frame--main');c.mount(mf.screen,defaults(c));
+    const mf=frame(402,`◆ ${c.name}`);mf.wrap.classList.add('sc-frame--main');c.mount(mf.screen,{...defaults(c),...c.main});
     const layout=el('div','sc-main-comp');const holder=el('div','sc-main-comp__frame');holder.append(mf.wrap);
     const specList=el('dl','sc-spec');layout.append(holder,specList);main.append(layout);s.append(main);
     requestAnimationFrame(()=>redline(mf,c,specList));

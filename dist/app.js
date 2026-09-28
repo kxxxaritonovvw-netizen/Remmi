@@ -141,3 +141,17 @@ const queue=()=>{if(!frame)frame=requestAnimationFrame(reveal)};
 main.addEventListener('scroll',queue,{passive:true});addEventListener('resize',queue);motion.addEventListener?.('change',queue);
 new MutationObserver(queue).observe(main,{childList:true,subtree:true});queue()}
 {const f=document.querySelector('footer'),a=document.querySelector('.app');new ResizeObserver(()=>a.style.setProperty('--footer-h',`${f.offsetHeight-24}px`)).observe(f)}
+{// Play the exit animation before a dialog actually closes (Отмена, Готово, Esc).
+const motion=matchMedia('(prefers-reduced-motion: reduce)');
+for(const dialog of document.querySelectorAll('dialog')){
+  const close=HTMLDialogElement.prototype.close;
+  dialog.close=function(value){
+    if(!this.open||this.classList.contains('closing'))return;
+    if(motion.matches)return close.call(this,value);
+    this.classList.add('closing');
+    let done=false;const finish=()=>{if(done)return;done=true;this.classList.remove('closing');close.call(this,value)};
+    this.addEventListener('animationend',event=>{if(event.target===this)finish()},{once:true});
+    setTimeout(finish,400);
+  };
+  dialog.addEventListener('cancel',event=>{event.preventDefault();dialog.close()});
+}}

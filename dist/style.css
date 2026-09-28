@@ -83,3 +83,18 @@ footer #navigation rect,footer #navigation path{fill:none}
 .calendar-event.short .resize-handle{height:8px}
 .calendar-draft{background:#EAE6EDcc;border:1px dashed #a093ab;border-left:3px solid #a093ab;pointer-events:none;z-index:4}
 .calendar-draft strong{color:#716778}
+/* Mobile sheets slide up from the bottom, starting slightly narrower and settling to full width. */
+@media(prefers-reduced-motion:no-preference){
+dialog.closing{animation:disappear .15s ease-in forwards}
+@keyframes disappear{to{opacity:0;transform:translateY(12px)}}
+dialog[open]::backdrop{animation:backdrop-in .3s ease-out}
+dialog.closing::backdrop{animation:backdrop-out .26s ease-in forwards}
+@keyframes backdrop-in{from{opacity:0}}
+@keyframes backdrop-out{to{opacity:0}}
+@media(max-width:600px){
+dialog{transform-origin:50% 100%}
+dialog[open]{animation:sheet-in .42s cubic-bezier(.22,1,.36,1)}
+dialog.closing{animation:sheet-out .26s cubic-bezier(.4,0,1,1) forwards}
+@keyframes sheet-in{from{transform:translateY(100%) scaleX(.9)}to{transform:none}}
+@keyframes sheet-out{from{transform:none}to{transform:translateY(100%) scaleX(.9)}}
+}}

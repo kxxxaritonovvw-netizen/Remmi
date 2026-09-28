@@ -1,0 +1,6 @@
+/* Header — shared top bar for every tab. Everything about it lives in this file.
+   50px tall, 16px side padding from the screen edges, 20px title; optional aside on the right. */
+.header{flex-shrink:0;height:50px;display:flex;align-items:center;justify-content:space-between;gap:12px;margin-inline:calc(-1*var(--pad,0px));padding:0 16px;background:#F4F1F6;position:relative;z-index:4}
+.header__title{margin:0;min-width:0;font-size:20px;font-weight:600;letter-spacing:-.3px;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.header__aside{flex-shrink:0;font-size:20px;line-height:1;font-weight:400;color:#aaa;font-variant-numeric:tabular-nums}
+.header__aside:empty{display:none}

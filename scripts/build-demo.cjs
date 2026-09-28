@@ -5,9 +5,11 @@ const fs=require('fs'),path=require('path');
 const repo=path.join(__dirname,'..','dist'),out=path.join(__dirname,'..','demo-build');
 fs.mkdirSync(out,{recursive:true});
 const html=fs.readFileSync(`${repo}/index.html`,'utf8');
-const css=fs.readFileSync(`${repo}/style.css`,'utf8').replace(/@media\(max-width:600px\)/g,'@media all');
-const js=fs.readFileSync(`${repo}/app.js`,'utf8');
-const body=html.slice(html.indexOf('<body>')+6,html.indexOf('</body>')).replace(/<script[^>]*src="app.js"[^>]*><\/script>/,'');
+// Inline every stylesheet and script index.html links (app + components), in order.
+const read=file=>fs.readFileSync(path.join(repo,file),'utf8');
+const css=[...html.matchAll(/<link rel="stylesheet" href="([^"]+)">/g)].map(m=>read(m[1])).join('\n').replace(/@media\(max-width:600px\)/g,'@media all');
+const js=[...html.matchAll(/<script src="([^"]+)"><\/script>/g)].map(m=>read(m[1])).join('\n');
+const body=html.slice(html.indexOf('<body>')+6,html.indexOf('</body>')).replace(/<script[^>]*src="[^"]+"[^>]*><\/script>/g,'');
 if(!body.includes('class="app"'))throw new Error('app markup not found');
 const demoCss=`
 html,body{height:auto;min-height:100%}

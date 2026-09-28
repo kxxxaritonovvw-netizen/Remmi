@@ -1,0 +1,15 @@
+/* TaskItem — one task row. Everything about the row lives in this file.
+   Rounded row (radius 22) that tints on hover; rows stacked in a card are split by an inset hairline. */
+.task-item{position:relative;display:flex;gap:10px;align-items:flex-start;min-height:76px;padding:12px 14px;border-radius:22px;color:#242424;transition:background-color .15s ease}
+.task-item:not(:first-child):before{content:'';position:absolute;top:0;left:14px;right:14px;border-top:1px solid #ededed;transition:opacity .15s ease;pointer-events:none}
+@media(hover:hover){.task-item:hover{background:#F4F1F6}.task-item:hover:before,.task-item:hover+.task-item:before{opacity:0}}
+.task-item button{min-height:44px;margin:0;border:0;background:none;font:inherit;color:inherit;cursor:pointer}
+.task-item button:focus-visible{outline:2px solid #777;outline-offset:4px}
+.task-item__check{width:34px;flex-shrink:0;padding:10px 5px}
+.task-item__circle{display:block;width:22px;height:22px;border:1.4px solid #aaa;border-radius:50%;position:relative}
+.task-item__body{flex:1;min-width:0;padding:8px 0;text-align:left}
+.task-item__title{display:block;font-size:16px;line-height:1.4;overflow-wrap:anywhere}
+.task-item__meta{display:block;margin-top:5px;font-size:12px;color:#777}
+.task-item--done .task-item__circle{background:#555;border-color:#555}
+.task-item--done .task-item__circle:after{content:'✓';position:absolute;inset:0;color:#fff;font-size:15px;line-height:20px;text-align:center}
+.task-item--done .task-item__title{text-decoration:line-through;color:#999}

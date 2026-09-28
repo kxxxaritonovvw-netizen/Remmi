@@ -1,7 +1,7 @@
 // Component showcase: each component registers itself from its *.stories.js file,
 // then Showcase.start() draws the list, variants and a live playground.
 const Showcase=(()=>{
-  const components=[];
+  const components=[],pending=[];
   const el=(tag,cls,text)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(text!=null)n.textContent=text;return n};
   const widths=[360,402,600];
 
@@ -35,7 +35,7 @@ const Showcase=(()=>{
     const mf=frame(402,`◆ ${c.name}`);mf.wrap.classList.add('sc-frame--main');c.mount(mf.screen,{...defaults(c),...c.main});
     const layout=el('div','sc-main-comp');const holder=el('div','sc-main-comp__frame');holder.append(mf.wrap);
     const specList=el('dl','sc-spec');layout.append(holder,specList);main.append(layout);s.append(main);
-    requestAnimationFrame(()=>redline(mf,c,specList));
+    pending.push(()=>redline(mf,c,specList));
 
     // Variants
     const vars=el('div','sc-block');vars.append(el('h3','sc-block__title','Варианты'));
@@ -47,12 +47,13 @@ const Showcase=(()=>{
     const play=el('div','sc-block');play.append(el('h3','sc-block__title','Песочница'));
     const state={...defaults(c)};let width=402;
     const controls=el('form','sc-controls');controls.onsubmit=e=>e.preventDefault();
-    const f=frame(width,'Живой экземпляр');const update=c.mount(f.screen,state);
-    c.props.forEach(p=>{
+    const f=frame(width,'Живой экземпляр');const update=c.mount(f.screen,{...state});
+    c.props.filter(p=>p.control!==false).forEach(p=>{
       const label=el('label','sc-field');const inputId=`${id}-${p.name}`;label.htmlFor=inputId;
       label.append(el('span','sc-field__name',p.name));
-      const input=el('input');input.id=inputId;input.value=state[p.name];input.autocomplete='off';
-      input.oninput=()=>{state[p.name]=input.value;update({...state})};
+      const input=el('input');input.id=inputId;input.autocomplete='off';
+      if(p.type==='boolean'){label.classList.add('sc-field--check');input.type='checkbox';input.checked=!!state[p.name];input.onchange=()=>{state[p.name]=input.checked;update({...state})}}
+      else{input.value=state[p.name];input.oninput=()=>{state[p.name]=input.value;update({...state})}}
       label.append(input);controls.append(label);
     });
     const seg=el('div','sc-seg');seg.setAttribute('role','group');seg.setAttribute('aria-label','Ширина экрана');
@@ -67,12 +68,15 @@ const Showcase=(()=>{
   const hex=color=>{const m=color.match(/\d+(\.\d+)?/g);if(!m)return color;const [r,g,b,a]=m.map(Number);if(a===0)return 'прозрачный';return '#'+[r,g,b].map(v=>Math.round(v).toString(16).padStart(2,'0')).join('').toUpperCase()};
   // Draws padding zones and a height ruler over the main instance, and lists measured values.
   function redline(f,c,list){
-    const root=f.screen.firstElementChild;if(!root)return;
+    // Measure the element a story marks with data-sc-root, else the first thing it mounted.
+    const root=f.screen.querySelector('[data-sc-root]')||f.screen.firstElementChild;if(!root)return;
     const cs=getComputedStyle(root),box=root.getBoundingClientRect(),pl=parseFloat(cs.paddingLeft),pr=parseFloat(cs.paddingRight);
-    const overlay=el('div','sc-redline');overlay.style.height=`${box.height}px`;
+    // Place the overlay exactly over the measured element, which may sit inside a card.
+    const sbox=f.screen.getBoundingClientRect(),top=box.top-sbox.top,left=box.left-sbox.left;
+    const overlay=el('div','sc-redline');Object.assign(overlay.style,{top:`${top}px`,left:`${left}px`,width:`${box.width}px`,height:`${box.height}px`});
     for(const [side,w] of [['left',pl],['right',pr]])if(w){const z=el('div',`sc-redline__pad sc-redline__pad--${side}`);z.style.width=`${w}px`;z.append(el('span','',String(Math.round(w))));overlay.append(z)}
     f.screen.style.position='relative';f.screen.append(overlay);
-    const ruler=el('div','sc-ruler');ruler.style.height=`${box.height}px`;ruler.append(el('span','',String(Math.round(box.height))));
+    const ruler=el('div','sc-ruler');ruler.style.height=`${box.height}px`;ruler.style.marginTop=`${top}px`;ruler.append(el('span','',String(Math.round(box.height))));
     f.wrap.querySelector('.sc-frame__body').append(ruler);
     const rows=[['Размер',`${Math.round(box.width)} × ${Math.round(box.height)}`],['Отступы',`${Math.round(pl)} / ${Math.round(pr)}`],['Фон',hex(cs.backgroundColor)],...(c.spec||[]).map(s=>[s.label,s.value(root,{hex})])];
     rows.forEach(([k,v])=>{list.append(el('dt','',k),el('dd','',v))});
@@ -88,6 +92,8 @@ const Showcase=(()=>{
       nav.append(list);
       const main=el('main','sc-main');components.forEach(c=>main.append(section(c)));
       root.append(nav,main);
+      // Measure once everything is in the document, so the spec never waits for a frame.
+      pending.splice(0).forEach(run=>run());
     }
   };
 })();

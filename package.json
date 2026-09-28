@@ -1,1 +1,1 @@
-{"name":"remmi","private":true,"version":"0.1.0","scripts":{"dev":"node server.cjs","check":"node --check dist/app.js"},"engines":{"node":">=18"}}
+{"name":"remmi","private":true,"version":"0.1.0","scripts":{"dev":"node server.cjs","check":"node --check dist/app.js","demo":"node scripts/build-demo.cjs"},"engines":{"node":">=18"}}

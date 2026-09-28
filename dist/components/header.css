@@ -4,6 +4,6 @@
 .header__text{min-width:0;display:flex;flex-direction:column;gap:2px}
 .header__caption{margin:0;font-size:12px;font-weight:500;line-height:14px;color:#8A8490;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .header__caption:empty{display:none}
-.header__title{margin:0;min-width:0;color:#F5B800;font-size:20px;font-weight:600;letter-spacing:-.3px;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.header__title{margin:0;min-width:0;color:#7A1E32;font-size:20px;font-weight:600;letter-spacing:-.3px;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .header__aside{flex-shrink:0;font-size:20px;line-height:1;font-weight:400;color:#aaa;font-variant-numeric:tabular-nums}
 .header__aside:empty{display:none}

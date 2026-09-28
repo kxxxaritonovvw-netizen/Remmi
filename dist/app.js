@@ -27,9 +27,9 @@ function renderTimeline(active){
   for(let h=0;h<=24;h++){const line=document.createElement('div');line.className='hour-line';line.style.top=`${h*96}px`;if(h===24){line.style.height='0';line.classList.add('last-hour')}const label=document.createElement('span');label.className='hour-label';label.textContent=`${String(h).padStart(2,'0')}:00`;line.append(label);canvas.append(line)}
   const entries=tasks.filter(t=>!t.done&&t.time&&(t.date===day()||(t.date===day(-1)&&timeMinutes(t.time)+taskDuration(t)>1440))).map(t=>{const rawStart=timeMinutes(t.time)+(t.date===day(-1)?-1440:0);return{t,start:Math.max(0,rawStart),end:Math.min(1440,rawStart+taskDuration(t))}}).sort((a,b)=>a.start-b.start||a.end-b.end);
   let cluster=[],clusterEnd=-1;
-  function placeCluster(){const laneEnds=[];for(const e of cluster){let lane=laneEnds.findIndex(end=>end<=e.start);if(lane<0)lane=laneEnds.length;laneEnds[lane]=e.end;e.lane=lane}for(const e of cluster){const button=document.createElement('button');button.className='calendar-event'+(e.end-e.start<30?' short':'');button.style.top=`${e.start*1.6}px`;button.style.height=`${Math.max(1,(e.end-e.start)*1.6-2)}px`;button.style.left=`calc(${e.lane/laneEnds.length*100}% + 4px)`;button.style.width=`calc(${100/laneEnds.length}% - 8px)`;const title=document.createElement('strong');title.textContent=e.t.title;const time=document.createElement('small');time.textContent=`${e.t.time}–${clockLabel(timeMinutes(e.t.time)+taskDuration(e.t))}`;button.title=`${e.t.title}, ${time.textContent}`;button.setAttribute('aria-label',button.title);button.append(title,time);bindCalendarDrag(button,e,scroll,canvas);canvas.append(button)}cluster=[]}
+  function placeCluster(){const laneEnds=[];for(const e of cluster){let lane=laneEnds.findIndex(end=>end<=e.start);if(lane<0)lane=laneEnds.length;laneEnds[lane]=e.end;e.lane=lane}for(const e of cluster){const button=document.createElement('button');button.className='calendar-event'+(e.end-e.start<30?' short':'');button.style.top=`${e.start*1.6}px`;button.style.height=`${Math.max(1,(e.end-e.start)*1.6-2)}px`;button.style.left=`calc(${e.lane/laneEnds.length*100}% + 4px)`;button.style.width=`calc(${100/laneEnds.length}% - 8px)`;const title=document.createElement('strong');title.textContent=e.t.title;const time=document.createElement('small');time.textContent=`${e.t.time}–${clockLabel(timeMinutes(e.t.time)+taskDuration(e.t))}`;button.title=`${e.t.title}, ${time.textContent}`;button.setAttribute('aria-label',button.title);button.append(title,time);for(const edge of ['top','bottom']){const h=document.createElement('span');h.className=`resize-handle ${edge}`;h.setAttribute('aria-hidden','true');button.append(h)}bindCalendarDrag(button,e,scroll,canvas);canvas.append(button)}cluster=[]}
   for(const e of entries){if(cluster.length&&e.start>=clusterEnd){placeCluster();clusterEnd=-1}cluster.push(e);clusterEnd=Math.max(clusterEnd,e.end)}if(cluster.length)placeCluster();
-  const now=new Date();const marker=document.createElement('div');marker.className='current-time';marker.style.top=`${(now.getHours()*60+now.getMinutes())*1.6}px`;canvas.append(marker);scroll.append(canvas);$('tasks').append(scroll);
+  const now=new Date();const marker=document.createElement('div');marker.className='current-time';marker.style.top=`${(now.getHours()*60+now.getMinutes())*1.6}px`;canvas.append(marker);scroll.append(canvas);$('tasks').append(scroll);bindCalendarCreate(scroll,canvas);
 
   requestAnimationFrame(()=>{scroll.scrollTop=Math.max(0,((entries[0]?.start??now.getHours()*60)-60)*1.6)});
 }
@@ -41,7 +41,8 @@ function bindCalendarDrag(button,entry,scroll,canvas){
   button.addEventListener('pointerdown',event=>{
     if(event.button!==0||!event.isPrimary||drag)return;
     const rawStart=timeMinutes(task.time)+(task.date===day(-1)?-1440:0);
-    drag={id:event.pointerId,x:event.clientX,y:event.clientY,lastY:event.clientY,scroll:scroll.scrollTop,rawStart,start:rawStart,active:false,frame:0};
+    const rawEnd=rawStart+taskDuration(task),mode=event.target.closest('.resize-handle.top')?'top':event.target.closest('.resize-handle.bottom')?'bottom':'move';
+    drag={id:event.pointerId,x:event.clientX,y:event.clientY,lastY:event.clientY,scroll:scroll.scrollTop,rawStart,rawEnd,start:rawStart,end:rawEnd,mode,active:false,frame:0};
     suppressClick=false;
     button.setPointerCapture(event.pointerId);
     if(event.pointerType!=='mouse')drag.timer=setTimeout(activate,280);
@@ -54,16 +55,19 @@ function bindCalendarDrag(button,entry,scroll,canvas){
     ghost.className='calendar-origin';ghost.setAttribute('aria-hidden','true');
     for(const key of ['top','height','left','width'])ghost.style[key]=button.style[key];
     canvas.append(ghost);drag.ghost=ghost;
-    button.classList.add('dragging');scroll.classList.add('is-dragging');
+    button.classList.add('dragging',drag.mode==='move'?'moving':'resizing');scroll.classList.add('is-dragging');
     drag.frame=requestAnimationFrame(tick);
   }
   function update(){
     const delta=(drag.lastY-drag.y+scroll.scrollTop-drag.scroll)/pixelsPerMinute;
-    drag.start=Math.max(Math.min(0,drag.rawStart),Math.min(1435,Math.round((drag.rawStart+delta)/5)*5));
-    const visibleStart=Math.max(0,drag.start),visibleEnd=Math.min(1440,drag.start+taskDuration(task));
+    const snap=value=>Math.round(value/5)*5;
+    if(drag.mode==='move'){drag.start=Math.max(Math.min(0,drag.rawStart),Math.min(1435,snap(drag.rawStart+delta)));drag.end=drag.start+(drag.rawEnd-drag.rawStart)}
+    else if(drag.mode==='top')drag.start=Math.max(Math.min(0,drag.rawStart),Math.min(drag.rawEnd-15,snap(drag.rawStart+delta)));
+    else drag.end=Math.min(1440,Math.max(drag.rawStart+15,snap(drag.rawEnd+delta)));
+    const visibleStart=Math.max(0,drag.start),visibleEnd=Math.min(1440,drag.end);
     button.style.top=`${visibleStart*pixelsPerMinute}px`;
     button.style.height=`${Math.max(1,(visibleEnd-visibleStart)*pixelsPerMinute-2)}px`;
-    button.querySelector('small').textContent=`${clockLabel((drag.start+1440)%1440)}–${clockLabel((drag.start+1440+taskDuration(task))%1440)}`;
+    button.querySelector('small').textContent=`${clockLabel((drag.start+1440)%1440)}–${clockLabel((drag.end+1440)%1440)}`;
   }
   function tick(){
     if(!drag?.active)return;
@@ -81,10 +85,10 @@ function bindCalendarDrag(button,entry,scroll,canvas){
     if(!drag)return;
     const state=drag;drag=null;
     clearTimeout(state.timer);cancelAnimationFrame(state.frame);
-    state.ghost?.remove();button.classList.remove('dragging');scroll.classList.remove('is-dragging');
+    state.ghost?.remove();button.classList.remove('dragging','moving','resizing');scroll.classList.remove('is-dragging');
     if(button.hasPointerCapture(state.id))button.releasePointerCapture(state.id);
     if(!state.active)return;
-    if(commit){task.date=day(state.start<0?-1:0);task.time=clockLabel((state.start+1440)%1440)}
+    if(commit){task.date=day(state.start<0?-1:0);task.time=clockLabel((state.start+1440)%1440);task.duration=state.end-state.start}
     const position=scroll.scrollTop;
     render();requestAnimationFrame(()=>{const next=document.querySelector('.timeline-scroll');if(next)next.scrollTop=position});
   }
@@ -92,6 +96,32 @@ function bindCalendarDrag(button,entry,scroll,canvas){
   button.addEventListener('pointercancel',()=>finish(false));
   button.addEventListener('lostpointercapture',()=>finish(false));
   button.addEventListener('keydown',event=>{if(event.key==='Escape'&&drag){event.preventDefault();finish(false)}});
+}
+function bindCalendarCreate(scroll,canvas){
+  // Tap an empty slot for a 30-minute event; with a mouse, drag to set its length.
+  const pixelsPerMinute=1.6,minuteAt=y=>(y-canvas.getBoundingClientRect().top)/pixelsPerMinute;
+  let press=null;
+  canvas.addEventListener('pointerdown',event=>{
+    if(event.button!==0||!event.isPrimary||event.target.closest('.calendar-event'))return;
+    const start=Math.max(0,Math.min(1425,Math.floor(minuteAt(event.clientY)/15)*15));
+    press={id:event.pointerId,x:event.clientX,y:event.clientY,start,end:start+30,dragging:false};
+  });
+  canvas.addEventListener('pointermove',event=>{
+    if(!press||event.pointerId!==press.id)return;
+    if(!press.dragging&&event.pointerType==='mouse'&&Math.abs(event.clientY-press.y)>5){press.dragging=true;canvas.setPointerCapture(event.pointerId);press.draft=draft(press)}
+    if(press.dragging){press.end=Math.min(1440,Math.max(press.start+15,Math.ceil(minuteAt(event.clientY)/15)*15));place(press.draft,press)}
+  });
+  canvas.addEventListener('pointerup',event=>{
+    if(!press||event.pointerId!==press.id)return;
+    const state=press;press=null;
+    if(!state.dragging&&Math.hypot(event.clientX-state.x,event.clientY-state.y)>8)return;
+    const block=state.draft||draft(state);
+    openEditor(null,day());$('time').value=clockLabel(state.start);$('time').disabled=false;$('endTime').value=clockLabel(state.end%1440);syncEndTime();
+    $('editor').addEventListener('close',()=>block.remove(),{once:true});
+  });
+  canvas.addEventListener('pointercancel',()=>{press?.draft?.remove();press=null});
+  function draft(state){const block=document.createElement('div');block.className='calendar-event calendar-draft';block.setAttribute('aria-hidden','true');block.innerHTML='<strong>Новое событие</strong><small></small>';canvas.append(block);place(block,state);return block}
+  function place(block,state){block.style.top=`${state.start*pixelsPerMinute}px`;block.style.height=`${(state.end-state.start)*pixelsPerMinute-2}px`;block.style.left='4px';block.style.width='calc(100% - 8px)';block.querySelector('small').textContent=`${clockLabel(state.start)}–${clockLabel(state.end%1440)}`}
 }
 function syncEndTime(){const enabled=Boolean($('date').value&&$('time').value);$('endTime').disabled=!enabled;if(!enabled){$('endTime').value='';$('endNote').textContent='';return}if(!$('endTime').value)$('endTime').value=clockLabel(timeMinutes($('time').value)+30);$('endNote').textContent=timeMinutes($('endTime').value)<=timeMinutes($('time').value)?'Окончание на следующий день':''}
 

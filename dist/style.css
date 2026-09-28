@@ -72,3 +72,14 @@ footer #navigation button[aria-pressed="true"]{background:none;border:0;color:#2
 footer #navigation svg{width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
 footer #navigation circle{fill:currentColor;stroke:none}
 footer #navigation rect,footer #navigation path{fill:none}
+/* Resize handles on calendar events and the draft block for new ones. */
+.resize-handle{position:absolute;left:0;right:0;height:10px;cursor:ns-resize;z-index:1}
+.resize-handle.top{top:-3px}.resize-handle.bottom{bottom:-3px}
+.resize-handle:after{content:'';position:absolute;left:50%;width:18px;height:4px;margin-left:-9px;border-radius:2px;background:#82718e;opacity:0;transition:opacity .15s ease}
+.resize-handle.top:after{top:3px}.resize-handle.bottom:after{bottom:3px}
+@media(hover:hover){.calendar-event:hover .resize-handle:after{opacity:.45}}
+.calendar-event.resizing .resize-handle:after{opacity:.7}
+.calendar-event.resizing{cursor:ns-resize}
+.calendar-event.short .resize-handle{height:8px}
+.calendar-draft{background:#EAE6EDcc;border:1px dashed #a093ab;border-left:3px solid #a093ab;pointer-events:none;z-index:4}
+.calendar-draft strong{color:#716778}

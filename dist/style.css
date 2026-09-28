@@ -35,13 +35,16 @@ footer{position:static;flex-shrink:0;margin-top:0;padding-top:16px;z-index:auto}
 @media(max-width:380px){.app{padding-left:16px;padding-right:16px}.timeline-scroll{padding-right:10px}.calendar-event{padding-left:5px;padding-right:5px}.field input{width:150px}}
 main{padding-bottom:max(32px,env(safe-area-inset-bottom))}
 /* Rows span the card with a 2px inset so each one can carry its own hover. */
-.task-group{padding:2px}
-.task-group>.task{position:relative;border-bottom:0;padding:12px 14px;border-radius:22px;transition:background-color .15s ease}
-.task-group>.task+.task:before{content:'';position:absolute;top:0;left:14px;right:14px;border-top:1px solid #ededed;transition:opacity .15s ease}
-@media(hover:hover){.task-group>.task:hover{background:#F4F1F6}.task-group>.task:hover:before,.task-group>.task:hover+.task:before{opacity:0}}
+.task-group{padding:2px;background:#EAE6ED}
+.task-list{background:#fff;border-radius:22px;padding:2px}
+.day-unscheduled .task-group{max-height:none;overflow:visible}.day-unscheduled .task-list{max-height:160px;overflow:auto;scrollbar-width:thin}
+.task-list>.task{position:relative;border-bottom:0;padding:12px;border-radius:20px;transition:background-color .15s ease}
+.task-list>.task+.task:before{content:'';position:absolute;top:0;left:12px;right:12px;border-top:1px solid #ededed;transition:opacity .15s ease}
+@media(hover:hover){.task-list>.task:hover{background:#F4F1F6}.task-list>.task:hover:before,.task-list>.task:hover+.task:before{opacity:0}}
 #tasks>.group,#tasks>.task-group,#completedToggle,#completed>.task{transform-origin:50% 0;will-change:transform,opacity}
-/* Inline "add task" row at the bottom of every card. */
-.add-task{width:100%;min-height:56px;align-items:center;text-align:left;color:#777;font-size:16px}
+/* Inline "add task" row on the grey card, below the white task list. */
+.add-task{width:100%;min-height:52px;align-items:center;text-align:left;color:#9C96A2;font-size:15px;border-bottom:0;padding:10px 14px;border-radius:22px;transition:background-color .15s ease,color .15s ease}
 .add-task .check{display:flex;align-items:center;justify-content:center;padding:0 5px}
-.add-circle{width:22px;height:22px;border-radius:50%;background:#E6E3E9;color:#6f6a74;display:grid;place-items:center}
+.add-circle{width:22px;height:22px;border-radius:50%;background:#DDD8E2;color:#9C96A2;display:grid;place-items:center}
 .add-circle svg{width:12px;height:12px}
+@media(hover:hover){.add-task:hover{background:#E2DDE6;color:#7d7684}}

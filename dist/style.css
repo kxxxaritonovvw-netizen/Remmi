@@ -39,3 +39,9 @@ main{min-height:0;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin
 .task-group>.task+.task:before{content:'';position:absolute;top:0;left:14px;right:14px;border-top:1px solid #ededed;transition:opacity .15s ease}
 @media(hover:hover){.task-group>.task:hover{background:#F4F1F6}.task-group>.task:hover:before,.task-group>.task:hover+.task:before{opacity:0}}
 #tasks>.group,#tasks>.task-group,#completedToggle,#completed>.task{transform-origin:50% 0;will-change:transform,opacity}
+
+/* Dragged events retain an empty, subdued outline at their original time. */
+.calendar-event{cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.calendar-event.dragging{cursor:grabbing;z-index:6;box-shadow:0 8px 22px #49345826;outline:1px solid #a093ab;background:#E5DFEB}
+.calendar-origin{position:absolute;border:1px dashed #bdb3c5;border-radius:6px;background:rgb(234 230 237 / 35%);pointer-events:none;z-index:1}
+.timeline-scroll.is-dragging{cursor:grabbing;scroll-behavior:auto}

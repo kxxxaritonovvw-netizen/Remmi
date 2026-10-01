@@ -161,7 +161,9 @@ main{margin-inline:calc(-1*var(--pad));padding-inline:var(--pad)}
 .composer{margin:0}
 .composer-body{flex:1;min-width:0;padding:8px 0;display:flex;flex-direction:column;gap:6px}
 .composer-title{width:100%;border:0;background:none;padding:0;font-size:16px;line-height:1.4;outline:none}
-.composer-title::placeholder{color:#A39DA8}
+.composer-title:focus-visible{outline:none}
+.composer-title::placeholder{color:#A39DA8;opacity:1;transition:opacity .15s ease}
+.composer-title:focus::placeholder{opacity:.5}
 .composer-meta{display:flex;gap:6px;flex-wrap:wrap}
 .composer-meta input{border:0;border-radius:10px;background:#F4F1F6;padding:5px 8px;font-size:13px;color:#6f6a74;min-height:30px}
 .composer-meta input:disabled{opacity:.45}
@@ -203,16 +205,16 @@ main{padding-top:8px}
 .task-item--done .task-item__circle:after{content:'✓';position:absolute;inset:0;color:#fff;font-size:15px;line-height:20px;text-align:center}
 .task-item--done .task-item__title{text-decoration:line-through;color:#999}
 
-html,body{height:auto;min-height:100%}
-body{display:grid;place-items:center;padding-inline:16px;padding-block:24px;box-sizing:border-box}
-.frame{position:relative;width:402px;height:812px;overflow:clip;background:#F4F1F6;box-shadow:0 0 0 1px #CFC8D6,0 20px 50px rgb(52 38 66/.16);zoom:var(--z,1)}
+html,body{height:100%;min-height:0}
+body{display:grid;place-items:center;padding:16px;box-sizing:border-box}
+.frame{position:relative;width:402px;height:760px;overflow:clip;background:#F4F1F6;box-shadow:0 0 0 1px #CFC8D6,0 20px 50px rgb(52 38 66/.16);zoom:var(--z,1)}
 .frame .app{height:100%;max-width:none;margin:0}
 .frame dialog{position:absolute;inset:auto 0 0 0;margin:0;z-index:20;max-height:90%}
 .frame:after{content:'';position:absolute;inset:0;background:#0005;opacity:0;pointer-events:none;z-index:15;will-change:opacity;transition:opacity .38s cubic-bezier(.3,0,.8,.15)}
 html.sheet-open .frame:after{opacity:1;pointer-events:auto;transition:opacity .5s cubic-bezier(.32,.72,0,1)}
-.size{margin-top:12px;text-align:center;color:#6F6875;font:12px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-variant-numeric:tabular-nums;letter-spacing:.3px}</style>
+.size{margin-top:12px;text-align:center;color:#6F6875;font:12px/16px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-variant-numeric:tabular-nums;letter-spacing:.3px}</style>
 <div><div class="frame"><div class="app"><header class="header" id="header"></header><main><div id="tasks"></div><button id="completedToggle" class="completed-toggle"></button><div id="completed"></div></main><footer><div class="fade" aria-hidden="true"><i></i><i></i><i></i><i></i></div><nav aria-label="Списки задач" id="navigation"></nav></footer></div>
-<dialog id="editor"><form id="form"><div class="sheet-head"><button type="button" id="cancel">Отмена</button><h2 id="editorTitle">Новая задача</h2><button class="save" type="submit">Готово</button></div><label class="sr-only" for="title">Название задачи</label><textarea id="title" rows="2" placeholder="Что нужно сделать?" maxlength="250" required></textarea><div class="quick"><button type="button" data-offset="0">Сегодня</button><button type="button" data-offset="1">Завтра</button><button type="button" data-offset="7">Через неделю</button></div><div class="field"><label for="date">Дата</label><input id="date" type="date"></div><div class="field"><label for="time">Начало</label><input id="time" type="time" disabled></div><div class="field"><label for="endTime">Окончание</label><input id="endTime" type="time" disabled></div><p id="endNote" class="duration-note"></p><button type="button" id="clearDate" class="secondary">Без даты и времени</button><p class="timezone" id="timezone"></p><button type="button" id="completeEdit" class="complete-edit" hidden>Отметить выполненной</button><button type="button" id="delete" class="delete" hidden>Удалить задачу</button></form></dialog><div id="notice" role="status"></div></div><div class="size">402 × 812</div></div>
+<dialog id="editor"><form id="form"><div class="sheet-head"><button type="button" id="cancel">Отмена</button><h2 id="editorTitle">Новая задача</h2><button class="save" type="submit">Готово</button></div><label class="sr-only" for="title">Название задачи</label><textarea id="title" rows="2" placeholder="Что нужно сделать?" maxlength="250" required></textarea><div class="quick"><button type="button" data-offset="0">Сегодня</button><button type="button" data-offset="1">Завтра</button><button type="button" data-offset="7">Через неделю</button></div><div class="field"><label for="date">Дата</label><input id="date" type="date"></div><div class="field"><label for="time">Начало</label><input id="time" type="time" disabled></div><div class="field"><label for="endTime">Окончание</label><input id="endTime" type="time" disabled></div><p id="endNote" class="duration-note"></p><button type="button" id="clearDate" class="secondary">Без даты и времени</button><p class="timezone" id="timezone"></p><button type="button" id="completeEdit" class="complete-edit" hidden>Отметить выполненной</button><button type="button" id="delete" class="delete" hidden>Удалить задачу</button></form></dialog><div id="notice" role="status"></div></div><div class="size">402 × 760</div></div>
 <script>
 // Inside a page the sheet can't use the top layer: open it in place, within the frame.
 HTMLDialogElement.prototype.showModal=HTMLDialogElement.prototype.show;
@@ -532,6 +534,6 @@ document.addEventListener('click',event=>{
 },true);
 }
 
-function fitFrame(){document.documentElement.style.setProperty('--z',Math.min(1,(innerWidth-32)/402))}
+function fitFrame(){document.documentElement.style.setProperty('--z',Math.max(.01,Math.min(1,(innerWidth-32)/402,(innerHeight-60)/760)))}
 addEventListener('resize',fitFrame);fitFrame();
 </script>

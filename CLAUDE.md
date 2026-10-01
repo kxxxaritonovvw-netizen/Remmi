@@ -1,6 +1,6 @@
 # Remmi
 
-Прототип Telegram Mini App для задач и напоминаний. Чистые HTML/CSS/JS без сборки: `dist/index.html`, `dist/style.css`, `dist/app.js`, компоненты в `dist/components/`. Данные только в памяти страницы, стартовый список задач пустой.
+Прототип Telegram Mini App для задач и напоминаний. Чистые HTML/CSS/JS без сборки: `dist/index.html`, `dist/style.css`, `dist/app.js`, компоненты в `dist/components/`. Задачи и настройки сохраняются в `localStorage` браузера (ключ `remmi:v1`, только на этом устройстве), стартовый список задач пустой.
 
 ## Общение
 - Отвечать на русском, кратко и по делу.

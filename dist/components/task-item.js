@@ -10,6 +10,6 @@ function TaskItem({title='',meta='',done=false,onToggle,onOpen}={}){
   const name=document.createElement('span');name.className='task-item__title';name.textContent=title;body.append(name);
   if(meta){const line=document.createElement('span');line.className='task-item__meta';line.textContent=meta;body.append(line)}
   if(onOpen)body.onclick=onOpen;
-  root.append(check,body);
+  root.append(body,check);
   return root;
 }

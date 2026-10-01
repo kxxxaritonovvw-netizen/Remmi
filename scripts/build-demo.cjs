@@ -30,5 +30,18 @@ HTMLDialogElement.prototype.showModal=HTMLDialogElement.prototype.show;
 ${js}
 function fitFrame(){document.documentElement.style.setProperty('--z',Math.max(.01,Math.min(1,(innerWidth-32)/402,(innerHeight-60)/760)))}
 addEventListener('resize',fitFrame);fitFrame();
+if(location.pathname.endsWith('/demo.html')){
+  let previous;
+  setInterval(async()=>{
+    if(document.hidden)return;
+    try{
+      const response=await fetch(location.href,{cache:'no-store'});
+      if(!response.ok)return;
+      const current=await response.text();
+      if(previous!==undefined&&previous!==current)location.reload();
+      previous=current;
+    }catch{}
+  },1000);
+}
 </script>
 `);

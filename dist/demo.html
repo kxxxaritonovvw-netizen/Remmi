@@ -1,0 +1,537 @@
+<title>Remmi демо</title>
+<meta name="color-scheme" content="light">
+<style>:root{font-family:"SF Pro Display",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#242424;background:#f6f6f6;font-synthesis:none}*{box-sizing:border-box}body{margin:0}button,input,textarea{font:inherit;color:inherit}button{cursor:pointer;background:none;border:0}button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid #777;outline-offset:4px}button{min-height:44px} .app{max-width:600px;min-height:100dvh;margin:auto;padding:0 30px;background:#fff;display:flex;flex-direction:column}.prototype{font-size:12px;font-weight:400;border:1px solid #e5e5e5;padding:5px 8px;border-radius:4px;color:#777}nav{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;background:#f1f1f1;border-radius:9px}nav button{text-align:center;border:1px solid transparent;border-radius:6px;padding:8px 12px;font-size:14px;color:#777}nav button[aria-pressed="true"]{background:#fff;border-color:#e5e5e5;color:#242424;font-weight:500}main{flex:1;padding-top:39px}h1{font-size:30px;font-weight:600;letter-spacing:-.8px;margin:5px 0}.task{display:flex;gap:10px;align-items:flex-start;border-bottom:1px solid #ededed;min-height:76px;padding:12px 0}.check{width:34px;flex-shrink:0;padding:10px 5px}.circle{display:block;border:1.4px solid #aaa;border-radius:50%;width:22px;height:22px}.group{font-size:14px;color:#777;margin:28px 0 3px;font-weight:500}.completed-toggle{font-size:14px;color:#777;margin-top:20px;padding:0}.empty{padding:48px 0;color:#888;text-align:center;font-size:15px}dialog{width:min(520px,calc(100% - 32px));padding:25px;border:1px solid #ddd;border-radius:12px;color:#242424;max-height:90dvh;overflow:auto}dialog::backdrop{background:#0005}.sheet-head{display:flex;align-items:center;justify-content:space-between;gap:6px}.sheet-head button{padding:0;font-size:14px}.sheet-head h2{font-size:16px;font-weight:600}.save{font-weight:600}textarea{border:0;resize:none;width:100%;padding:25px 0 20px;font-size:23px;background:transparent;line-height:1.4}textarea:focus{outline:none}.quick{display:flex;gap:7px;margin:5px 0 25px}.quick button{font-size:14px;border:1px solid #ddd;border-radius:5px;padding:6px 10px}.field{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 0;border-top:1px solid #eee;font-size:16px}.field input{min-width:0;width:170px;border:0;background:#f5f5f5;border-radius:4px;padding:8px;font-size:16px}.field input:disabled{opacity:.35}.secondary,.delete{font-size:14px;padding:0;color:#777}.delete{display:block;width:100%;border-top:1px solid #eee;margin-top:20px;color:#444;padding-top:12px}[hidden]{display:none!important}.timezone{font-size:12px;color:#999}.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}#notice{position:fixed;bottom:110px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:10px 16px;border-radius:6px;font-size:14px;display:none;max-width:90vw}@media all{:root{background:#fff}.app{padding:0 22px}main{padding-top:32px}dialog{width:100%;max-width:none;max-height:90dvh;margin:auto 0 0;border-radius:16px 16px 0 0;padding:20px 22px max(28px,env(safe-area-inset-bottom))}.quick button{flex:1;padding:6px 4px}}@media(prefers-reduced-motion:no-preference){dialog[open]{animation:appear .15s ease-out}@keyframes appear{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}}
+
+.app{padding-top:env(safe-area-inset-top)}
+
+:root,.app{background:#F4F1F6}
+
+:root,body{background:#E2DEE7}.app{background:#F4F1F6}
+
+#navigation{height:56px;background:#EAE6ED}#navigation button{height:48px;min-height:48px}
+
+h1{margin-bottom:0}.task-group{background:#fff;border-radius:24px;padding:0 16px}.task-group>.task:last-child{border-bottom:0}.group{margin-bottom:12px}
+
+.day-unscheduled{margin-bottom:24px}.day-unscheduled h2{font-size:14px;font-weight:500;color:#777;margin:0 0 12px}.timeline-scroll{height:clamp(360px,58dvh,620px);overflow:auto;overscroll-behavior:contain;scrollbar-width:thin;border-radius:24px;background:#fff;padding:24px 16px 24px 10px}.timeline{height:1728px;position:relative;margin-left:44px}.hour-line{position:absolute;left:0;right:0;border-top:1px solid #eee;height:72px;pointer-events:none}.hour-label{position:absolute;right:calc(100% + 9px);top:-8px;color:#96939a;font-size:12px;font-variant-numeric:tabular-nums}.hour-line:after{content:'';position:absolute;top:35px;left:0;right:0;border-top:1px dashed #f3f1f5}.calendar-event{position:absolute;min-height:0;text-align:left;background:#EAE6ED;border-left:3px solid #82718e;border-radius:6px;padding:5px 8px;overflow:hidden;z-index:2;display:flex;flex-direction:column;justify-content:flex-start;gap:2px}.calendar-event strong{font-size:14px;font-weight:500;line-height:18px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block;width:100%}.calendar-event small{font-size:12px;line-height:15px;color:#716778;font-variant-numeric:tabular-nums}.calendar-event.short{padding-top:0;padding-bottom:0;justify-content:center}.calendar-event.short small{display:none}.current-time{position:absolute;left:0;right:0;border-top:1px solid #c15a63;z-index:3;pointer-events:none}.current-time:before{content:'';position:absolute;width:5px;height:5px;background:#c15a63;border-radius:50%;left:-2px;top:-3px}.calendar-hint{font-size:12px;color:#888;margin:10px 0 0}.duration-note{font-size:12px;color:#888;margin:5px 0 12px}.complete-edit{width:100%;border:1px solid #ddd;border-radius:8px;margin-top:20px;font-size:14px}.timeline-scroll:focus-visible{outline:2px solid #aaa;outline-offset:3px}
+
+
+.timeline{height:2304px}.hour-line{height:96px}.hour-line:after{top:47px}.calendar-event strong,.calendar-event small{flex-shrink:0}.hour-line:last-of-type:after{display:none}
+/* Keep navigation above the scrolling content. */
+.app{height:100dvh;min-height:0;overflow:hidden}
+#navigation{flex-shrink:0}
+main{min-height:0;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin;padding-bottom:max(20px,env(safe-area-inset-bottom))}
+
+
+.app[data-view="today"] main{display:flex;flex-direction:column}
+.app[data-view="today"] #tasks{display:flex;flex-direction:column;flex:1;min-height:260px}
+.day-unscheduled{flex-shrink:0;margin-bottom:16px}
+.day-unscheduled .task-group{max-height:160px;overflow:auto;scrollbar-width:thin}
+.timeline-scroll{height:auto;min-height:140px;flex:1;isolation:isolate;overflow-x:hidden;position:relative}
+.completed-toggle{flex-shrink:0;text-align:left;margin-top:8px}
+#completed{flex-shrink:0;max-height:160px;overflow:auto}
+.calendar-event{min-width:0}
+.calendar-event small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.hour-line.last-hour:after{display:none}
+.calendar-event.short strong{font-size:12px;line-height:16px}
+.sheet-head{flex-wrap:wrap}.field label{flex-shrink:0}
+@media(max-width:380px){.app{padding-left:16px;padding-right:16px}.timeline-scroll{padding-right:10px}.calendar-event{padding-left:5px;padding-right:5px}.field input{width:150px}}
+/* Bottom navbar: content scrolls under a tinted, progressively blurred fade. */
+.app{position:relative}
+main{padding-bottom:var(--footer-h,140px)}
+footer{position:absolute;left:0;right:0;bottom:0;z-index:5;background:none;padding:56px 30px max(20px,env(safe-area-inset-bottom));pointer-events:none}
+footer #navigation{position:relative;pointer-events:auto}
+.fade{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.fade:after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,rgb(244 241 246/0) 0%,rgb(244 241 246/.08) 15%,rgb(244 241 246/.2) 30%,rgb(244 241 246/.36) 45%,rgb(244 241 246/.52) 60%,rgb(244 241 246/.66) 75%,rgb(244 241 246/.76) 90%,rgb(244 241 246/.8) 100%)}
+.fade i{position:absolute;inset:0}
+/* Each blur layer spans only the band its mask shows (stops remapped to the band), so less area is blurred per frame. */
+.fade i:nth-child(1){bottom:auto;height:45%;backdrop-filter:blur(.5px);-webkit-backdrop-filter:blur(.5px);mask:linear-gradient(to bottom,#0000 0%,#000 33.333%,#000 66.667%,#0000 100%)}
+.fade i:nth-child(2){top:15%;bottom:auto;height:50%;backdrop-filter:blur(1px);-webkit-backdrop-filter:blur(1px);mask:linear-gradient(to bottom,#0000 0%,#000 30%,#000 70%,#0000 100%)}
+.fade i:nth-child(3){top:35%;bottom:auto;height:50%;backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);mask:linear-gradient(to bottom,#0000 0%,#000 30%,#000 70%,#0000 100%)}
+.fade i:nth-child(4){top:55%;backdrop-filter:blur(3px) saturate(1.2);-webkit-backdrop-filter:blur(3px) saturate(1.2);mask:linear-gradient(to bottom,#0000 0%,#000 33.333%)}
+@media all{footer{padding-left:22px;padding-right:22px}}
+@media(max-width:380px){footer{padding-left:16px;padding-right:16px}}
+/* Rows span the card with a 2px inset so each one can carry its own hover. */
+.task-group{padding:2px}
+.task-group>.task{position:relative;border-bottom:0;padding:12px 14px;border-radius:22px;transition:background-color .15s ease}
+.task-group>.task+.task:before{content:'';position:absolute;top:0;left:14px;right:14px;border-top:1px solid #ededed;transition:opacity .15s ease}
+@media(hover:hover){.task-group>.task:hover{background:#F4F1F6}.task-group>.task:hover:before,.task-group>.task:hover+.task:before{opacity:0}}
+#tasks>.group,#tasks>.task-group,#completedToggle,#completed>.task-item{transform-origin:50% 0}
+/* Inline "add task" row at the bottom of every card. */
+.add-task{width:100%;min-height:56px;align-items:center;text-align:left;color:#777;font-size:16px}
+.add-task .check{display:flex;align-items:center;justify-content:center;padding:0 5px}
+.add-circle{width:22px;height:22px;border-radius:50%;background:#E6E3E9;color:#6f6a74;display:grid;place-items:center}
+.add-circle svg{width:12px;height:12px}
+
+/* Dragged events retain an empty, subdued outline at their original time. */
+.calendar-event{cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.calendar-event.dragging{cursor:grabbing;z-index:6;box-shadow:0 8px 22px #49345826;outline:1px solid #a093ab;background:#E5DFEB}
+.calendar-origin{position:absolute;border:1px dashed #bdb3c5;border-radius:6px;background:rgb(234 230 237 / 35%);pointer-events:none;z-index:1}
+.timeline-scroll.is-dragging{cursor:grabbing;scroll-behavior:auto}
+/* Bottom tab bar: icon above caption, no segmented pill. */
+footer{padding-top:40px;padding-bottom:max(8px,env(safe-area-inset-bottom))}
+footer #navigation{height:auto;background:none;padding:0;gap:0;border-radius:0}
+footer #navigation button{height:auto;min-height:52px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:6px 0;border:0;background:none;color:#9C96A2;font-size:11px;font-weight:500;letter-spacing:.1px;transition:color .15s ease}
+footer #navigation button[aria-pressed="true"]{background:none;border:0;color:#242424}
+footer #navigation svg{width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+footer #navigation circle{fill:currentColor;stroke:none}
+footer #navigation rect,footer #navigation path{fill:none}
+/* Resize handles on calendar events and the draft block for new ones. */
+.resize-handle{position:absolute;left:0;right:0;height:10px;cursor:ns-resize;z-index:1}
+.resize-handle.top{top:-3px}.resize-handle.bottom{bottom:-3px}
+.resize-handle:after{content:'';position:absolute;left:50%;width:18px;height:4px;margin-left:-9px;border-radius:2px;background:#82718e;opacity:0;transition:opacity .15s ease}
+.resize-handle.top:after{top:3px}.resize-handle.bottom:after{bottom:3px}
+@media(hover:hover){.calendar-event:hover .resize-handle:after{opacity:.45}}
+.calendar-event.resizing .resize-handle:after{opacity:.7}
+.calendar-event.resizing{cursor:ns-resize}
+.calendar-event.short .resize-handle{height:8px}
+.calendar-draft{background:#EAE6EDcc;border:1px dashed #a093ab;border-left:3px solid #a093ab;pointer-events:none;z-index:4}
+.calendar-draft strong{color:#716778}
+/* Mobile sheets slide up from the bottom while the page behind recedes. */
+@media(prefers-reduced-motion:no-preference){
+dialog.closing{animation:disappear .15s ease-in forwards}
+@keyframes disappear{to{opacity:0;transform:translateY(12px)}}
+dialog[open]::backdrop{animation:backdrop-in .5s ease-out}
+dialog.closing::backdrop{animation:backdrop-out .4s ease-in forwards}
+@keyframes backdrop-in{from{opacity:0}}
+@keyframes backdrop-out{to{opacity:0}}
+@media all{
+/* Only transform and opacity animate, so every frame stays on the compositor even at 60 Hz. */
+:root{--sheet-in:cubic-bezier(.32,.72,0,1);--sheet-out:cubic-bezier(.3,0,.8,.15)}
+.app{transform-origin:50% 0;will-change:transform;transition:transform .4s var(--sheet-in),border-radius 0s .4s}
+html.sheet-open .app{transform:translateY(12px) scale(.93);border-radius:22px;transition:transform .5s var(--sheet-in),border-radius 0s}
+/* The navbar blur is invisible under the dim layer but costly to re-render while the page scales. */
+html.sheet-busy .fade i{backdrop-filter:none;-webkit-backdrop-filter:none}
+dialog[open]{will-change:transform;animation:sheet-in .5s var(--sheet-in) both}
+dialog.closing{animation:sheet-out .38s var(--sheet-out) forwards}
+dialog[open]::backdrop{animation:backdrop-in .5s var(--sheet-in)}
+dialog.closing::backdrop{animation:backdrop-out .38s var(--sheet-out) forwards}
+@keyframes sheet-in{from{transform:translate3d(0,100%,0)}to{transform:translate3d(0,0,0)}}
+@keyframes sheet-out{from{transform:translate3d(0,0,0)}to{transform:translate3d(0,100%,0)}}
+}}
+footer #navigation{grid-template-columns:repeat(3,1fr)}
+/* Settings screen */
+.settings-card{padding:2px}
+.setting{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:56px;padding:10px 14px;position:relative;cursor:default}
+.setting+.setting:before{content:'';position:absolute;top:0;left:14px;right:14px;border-top:1px solid #ededed}
+.setting>span:first-child{display:flex;flex-direction:column;gap:2px;min-width:0}
+.setting-name{font-size:16px}
+.setting-hint{font-size:13px;color:#8a8490}
+.setting-value{font-size:15px;color:#8a8490;text-align:right;overflow-wrap:anywhere}
+.switch{appearance:none;-webkit-appearance:none;flex-shrink:0;width:48px;height:28px;border-radius:14px;background:#DDD8E2;position:relative;cursor:pointer;margin:0;transition:background-color .2s ease}
+.switch:before{content:'';position:absolute;top:2px;left:2px;width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 1px 3px #3a2e4433;transition:transform .2s ease}
+.switch:checked{background:#242424}
+.switch:checked:before{transform:translateX(20px)}
+.switch:focus-visible{outline:2px solid #777;outline-offset:2px}
+/* Task sheet: same soft palette and radii as the cards, compact enough to fit without scrolling. */
+dialog{border:0;background:#fff;overscroll-behavior:contain;scrollbar-width:none}
+dialog::-webkit-scrollbar{display:none}
+.sheet-head h2{margin:0}
+.sheet-head button{font-size:16px;min-height:44px}
+textarea{padding:16px 0 12px;font-size:21px;line-height:1.35}
+.quick{margin:0 0 16px}
+.quick button{min-height:40px;border:0;border-radius:12px;background:#F4F1F6;white-space:nowrap;transition:background-color .15s ease}
+@media(hover:hover){.quick button:hover{background:#EAE6ED}}
+.field{padding:8px 0;border-top-color:#ededed}
+.field input{background:#F4F1F6;border-radius:10px;padding:8px 10px}
+.duration-note{margin:0 0 4px}.duration-note:empty{display:none}
+.secondary{min-height:40px;margin-top:4px}
+.timezone{margin:0 0 4px}
+.complete-edit{min-height:44px;border:0;border-radius:14px;background:#F4F1F6;margin-top:12px}
+.delete{min-height:44px;margin-top:12px;padding-top:0;border-top-color:#ededed;color:#c15a63}
+@media all{dialog{border-radius:24px 24px 0 0;padding:12px 22px max(20px,env(safe-area-inset-bottom))}}
+/* Section headings open an inline composer. */
+.group-label{min-height:0;padding:0;font:inherit;color:inherit;text-align:left;display:inline-flex;align-items:baseline;transition:color .15s ease}
+button.group-label{padding:6px 0;margin:-6px 0}
+@media(hover:hover){button.group-label:hover{color:#242424}}
+button.group-label[aria-expanded="true"]{color:#242424}
+/* main spans the full app width (side padding moves inside it), so rows and lines can reach the screen edges. */
+/* One side padding for all main layouts, matching the Header: 20px on every screen width. */
+.app{--pad:20px;padding-left:var(--pad);padding-right:var(--pad)}
+footer{padding-left:var(--pad);padding-right:var(--pad)}
+main{margin-inline:calc(-1*var(--pad));padding-inline:var(--pad)}
+/* Plans: full-width 32px section rows, separated by hairlines inset by the side padding; the row tints on hover. */
+.app[data-view="all"] #tasks>.group{margin:12px calc(-1*var(--pad)) 0}
+.app[data-view="all"] #tasks>.group{position:relative}
+.app[data-view="all"] #tasks>.group~.group{margin-top:0}
+.app[data-view="all"] #tasks>.group~.group:before{content:'';position:absolute;top:0;left:var(--pad);right:var(--pad);border-top:1px solid #E4E0E8;pointer-events:none}
+.app[data-view="all"] .group-label{display:flex;align-items:center;width:100%;height:32px;min-height:32px;margin:0;padding:0 var(--pad);transition:background-color .15s ease,color .15s ease}
+@media(hover:hover){.app[data-view="all"] button.group-label:hover{background:#E9E5EC}}
+.app[data-view="all"] button.group-label:active{background:#E9E5EC}
+.app[data-view="all"] #tasks>.task-group{margin:4px 0 12px}
+.composer{margin:0}
+.composer-body{flex:1;min-width:0;padding:8px 0;display:flex;flex-direction:column;gap:6px}
+.composer-title{width:100%;border:0;background:none;padding:0;font-size:16px;line-height:1.4;outline:none}
+.composer-title::placeholder{color:#A39DA8}
+.composer-meta{display:flex;gap:6px;flex-wrap:wrap}
+.composer-meta input{border:0;border-radius:10px;background:#F4F1F6;padding:5px 8px;font-size:13px;color:#6f6a74;min-height:30px}
+.composer-meta input:disabled{opacity:.45}
+.composer .circle{border-style:dashed}
+.app[data-view="all"] #tasks>.task-group:has(>.composer){margin-inline:calc(4px - var(--pad))}
+/* Card edge: 4px; card padding + row padding: 16px, aligning the input with headings. */
+.composer>.check{display:none}
+@media(hover:hover){.task-group>.composer:hover{background:none}}
+/* "Сегодня" leads the Plans list: 1.5× the section heading size, semibold. */
+.app[data-view="all"] #tasks>.group-today{font-size:21px;font-weight:600;color:#242424}
+main{padding-top:8px}
+/* App rows (composer, "add task") that follow a TaskItem in a card get the same divider. */
+.task-group>.task-item+.task:before{content:'';position:absolute;top:0;left:14px;right:14px;border-top:1px solid #ededed;transition:opacity .15s ease}
+@media(hover:hover){.task-group>.task-item:hover+.task:before{opacity:0}}
+
+/* Header — shared top bar for every tab. Everything about it lives in this file.
+   50px tall, 20px side padding from the screen edges, 20px title with an optional 12px caption above it; optional aside on the right. */
+.header{flex-shrink:0;height:50px;display:flex;align-items:center;justify-content:space-between;gap:12px;margin-inline:calc(-1*var(--pad,0px));padding:0 20px;background:#F4F1F6;position:relative;z-index:4}
+.header__text{min-width:0;display:flex;flex-direction:column;gap:2px}
+.header__caption{margin:0;font-size:12px;font-weight:500;line-height:14px;color:#8A8490;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.header__caption:empty{display:none}
+.header__title{margin:0;min-width:0;color:#7A1E32;font-size:20px;font-weight:600;letter-spacing:-.3px;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.header__aside{flex-shrink:0;font-size:20px;line-height:1;font-weight:400;color:#aaa;font-variant-numeric:tabular-nums}
+.header__aside:empty{display:none}
+
+/* TaskItem — one task row. Everything about the row lives in this file.
+   Rounded row (radius 22) that tints on hover; rows stacked in a card are split by an inset hairline. */
+.task-item{position:relative;display:flex;gap:10px;align-items:flex-start;min-height:76px;padding:12px 14px;border-radius:22px;color:#242424;transition:background-color .15s ease}
+.task-item:not(:first-child):before{content:'';position:absolute;top:0;left:14px;right:14px;border-top:1px solid #ededed;transition:opacity .15s ease;pointer-events:none}
+@media(hover:hover){.task-item:hover{background:#F4F1F6}.task-item:hover:before,.task-item:hover+.task-item:before{opacity:0}}
+.task-item button{min-height:44px;margin:0;border:0;background:none;font:inherit;color:inherit;cursor:pointer}
+.task-item button:focus-visible{outline:2px solid #777;outline-offset:4px}
+.task-item__check{width:34px;flex-shrink:0;padding:10px 5px}
+.task-item__circle{display:block;width:22px;height:22px;border:1.4px solid #aaa;border-radius:50%;position:relative}
+.task-item__body{flex:1;min-width:0;padding:8px 0;text-align:left}
+.task-item__title{display:block;font-size:16px;line-height:1.4;overflow-wrap:anywhere}
+.task-item__meta{display:block;margin-top:5px;font-size:12px;color:#777}
+.task-item--done .task-item__circle{background:#555;border-color:#555}
+.task-item--done .task-item__circle:after{content:'✓';position:absolute;inset:0;color:#fff;font-size:15px;line-height:20px;text-align:center}
+.task-item--done .task-item__title{text-decoration:line-through;color:#999}
+
+html,body{height:auto;min-height:100%}
+body{display:grid;place-items:center;padding-inline:16px;padding-block:24px;box-sizing:border-box}
+.frame{position:relative;width:402px;height:812px;overflow:clip;background:#F4F1F6;box-shadow:0 0 0 1px #CFC8D6,0 20px 50px rgb(52 38 66/.16);zoom:var(--z,1)}
+.frame .app{height:100%;max-width:none;margin:0}
+.frame dialog{position:absolute;inset:auto 0 0 0;margin:0;z-index:20;max-height:90%}
+.frame:after{content:'';position:absolute;inset:0;background:#0005;opacity:0;pointer-events:none;z-index:15;will-change:opacity;transition:opacity .38s cubic-bezier(.3,0,.8,.15)}
+html.sheet-open .frame:after{opacity:1;pointer-events:auto;transition:opacity .5s cubic-bezier(.32,.72,0,1)}
+.size{margin-top:12px;text-align:center;color:#6F6875;font:12px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-variant-numeric:tabular-nums;letter-spacing:.3px}</style>
+<div><div class="frame"><div class="app"><header class="header" id="header"></header><main><div id="tasks"></div><button id="completedToggle" class="completed-toggle"></button><div id="completed"></div></main><footer><div class="fade" aria-hidden="true"><i></i><i></i><i></i><i></i></div><nav aria-label="Списки задач" id="navigation"></nav></footer></div>
+<dialog id="editor"><form id="form"><div class="sheet-head"><button type="button" id="cancel">Отмена</button><h2 id="editorTitle">Новая задача</h2><button class="save" type="submit">Готово</button></div><label class="sr-only" for="title">Название задачи</label><textarea id="title" rows="2" placeholder="Что нужно сделать?" maxlength="250" required></textarea><div class="quick"><button type="button" data-offset="0">Сегодня</button><button type="button" data-offset="1">Завтра</button><button type="button" data-offset="7">Через неделю</button></div><div class="field"><label for="date">Дата</label><input id="date" type="date"></div><div class="field"><label for="time">Начало</label><input id="time" type="time" disabled></div><div class="field"><label for="endTime">Окончание</label><input id="endTime" type="time" disabled></div><p id="endNote" class="duration-note"></p><button type="button" id="clearDate" class="secondary">Без даты и времени</button><p class="timezone" id="timezone"></p><button type="button" id="completeEdit" class="complete-edit" hidden>Отметить выполненной</button><button type="button" id="delete" class="delete" hidden>Удалить задачу</button></form></dialog><div id="notice" role="status"></div></div><div class="size">402 × 812</div></div>
+<script>
+// Inside a page the sheet can't use the top layer: open it in place, within the frame.
+HTMLDialogElement.prototype.showModal=HTMLDialogElement.prototype.show;
+// Header — shared top bar for every tab.
+// Usage: const header=Header(document.querySelector('.header')); header.render({caption:'Вторник, 29 сентября',title:'Сегодня',aside:'3'});
+function Header(root){
+  root.classList.add('header');
+  const text=document.createElement('div');text.className='header__text';
+  // Second-level heading above the title; hidden while empty.
+  const caption=document.createElement('p');caption.className='header__caption';
+  const title=document.createElement('h1');title.className='header__title';
+  text.append(caption,title);
+  const aside=document.createElement('span');aside.className='header__aside';
+  root.replaceChildren(text,aside);
+  return{
+    render({caption:over='',title:main='',aside:extra=''}={}){caption.textContent=over;title.textContent=main;aside.textContent=extra}
+  };
+}
+
+// TaskItem — one task row: round checkbox, title and an optional meta line (date, time).
+// Usage: list.append(TaskItem({title:'Купить хлеб',meta:'10:00–10:30',done:false,onToggle,onOpen}));
+function TaskItem({title='',meta='',done=false,onToggle,onOpen}={}){
+  const root=document.createElement('div');root.className='task-item'+(done?' task-item--done':'');
+  const check=document.createElement('button');check.type='button';check.className='task-item__check';
+  check.setAttribute('aria-label',(done?'Вернуть задачу: ':'Завершить задачу: ')+title);check.setAttribute('aria-pressed',String(done));
+  check.innerHTML='<span class="task-item__circle"></span>';
+  if(onToggle)check.onclick=onToggle;
+  const body=document.createElement('button');body.type='button';body.className='task-item__body';
+  const name=document.createElement('span');name.className='task-item__title';name.textContent=title;body.append(name);
+  if(meta){const line=document.createElement('span');line.className='task-item__meta';line.textContent=meta;body.append(line)}
+  if(onOpen)body.onclick=onOpen;
+  root.append(check,body);
+  return root;
+}
+
+const $=id=>document.getElementById(id);
+const day=(offset=0)=>{const d=new Date();d.setDate(d.getDate()+offset);return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};
+const labels={all:'Планы',today:'Сегодня',settings:'Настройки'};
+const navLabels={all:'Планы',today:'Календарь',settings:'Настройки'};
+const navIcons={all:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r="1.2"/><circle cx="4.5" cy="12" r="1.2"/><circle cx="4.5" cy="18" r="1.2"/></svg>',today:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="3.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/><circle cx="12" cy="15" r="1.4"/></svg>',settings:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><path d="M15 12a3 3 0 1 1-6 0a3 3 0 1 1 6 0z"/></svg>'};
+let view='today',showDone=false,editing=null;
+const header=Header($('header'));
+let tasks=[];
+const matches=t=>view==='all'||(view==='today'&&t.date&&t.date===day());
+function formatDate(d){return new Date(d+'T12:00:00').toLocaleDateString('ru-RU',{day:'numeric',month:'long',...(d.slice(0,4)!==day().slice(0,4)?{year:'numeric'}:{})})}
+function dateName(d){return d===day()?'Сегодня':d===day(1)?'Завтра':formatDate(d)}
+const rowCache=new Map();
+// context: 'day' inside a single-day section (time only), 'overdue' under Просрочено (no repeated label).
+function row(t,context=''){const sig=[t.title,t.done,t.date,t.time,t.duration,day(),context].join('\u0001'),hit=rowCache.get(t.id);if(hit?.sig===sig)return hit.el;const time=t.time?`${t.time}–${clockLabel(timeMinutes(t.time)+taskDuration(t))}`:'';const meta=context==='day'?time:t.date?[(t.date<day()&&context!=='overdue'?'Просрочено · ':'')+dateName(t.date),time].filter(Boolean).join(' · '):context?'':'Без даты';const el=TaskItem({title:t.title,meta,done:t.done,onToggle:()=>{t.done=!t.done;render()},onOpen:()=>openEditor(t)});rowCache.set(t.id,{sig,el});return el}
+function addRow(date){const el=document.createElement('button');el.type='button';el.className='task add-task';el.innerHTML='<span class="check" aria-hidden="true"><span class="add-circle"><svg viewBox="0 0 12 12"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span></span>Добавить задачу';el.onclick=()=>openEditor(null,date);return el}
+const navButtons=Object.keys(labels).map(key=>{const b=document.createElement('button');b.innerHTML=navIcons[key];const cap=document.createElement('span');cap.textContent=navLabels[key];b.append(cap);b.dataset.view=key;b.onclick=()=>{composing=null;view=key;render()};$('navigation').append(b);return b});
+function render(){document.querySelector(".app").dataset.view=view;for(const b of navButtons){const on=b.dataset.view===view;b.setAttribute('aria-pressed',String(on));if(on)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')}const active=tasks.filter(t=>matches(t)&&!t.done).sort((a,b)=>(a.date||'9999').localeCompare(b.date||'9999')||(a.time||'99').localeCompare(b.time||'99'));header.render({title:view==='all'?'Remmi':labels[view],aside:view==='today'?String(active.length):''});$('tasks').replaceChildren();if(view==='settings'){renderSettings()}else if(view==='today'){renderTimeline(active)}else renderPlans(active);const done=tasks.filter(t=>matches(t)&&t.done);$('completedToggle').hidden=!done.length||view==='today';$('completedToggle').textContent=`${showDone?'−':'+'} Завершённые · ${done.length}`;$('completed').replaceChildren(...(showDone&&view!=='today'?done.map(row):[]))}
+function renderPlans(active){
+  // Timeline of sections like Apple Reminders' Scheduled list: days of the coming week, the rest of the month, months, years.
+  const today=day(),iso=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  const cap=text=>text[0].toUpperCase()+text.slice(1),at=(y,m,d)=>new Date(y,m,d,12);
+  const sections=[{title:'Просрочено',test:t=>t.date&&t.date<today,hideEmpty:true,context:'overdue'}];
+  for(let i=0;i<7;i++){const d=day(i),date=new Date(d+'T12:00:00');sections.push({title:i===0?'Сегодня':i===1?'Завтра':cap(date.toLocaleDateString('ru-RU',{weekday:'long'})),from:d,to:d,add:d,context:'day',today:i===0})}
+  const next=new Date(day(7)+'T12:00:00'),year=next.getFullYear();
+  for(let m=next.getMonth();m<12;m++){const first=m===next.getMonth()?next:at(year,m,1),month=at(year,m,1).toLocaleDateString('ru-RU',{month:'long'});
+    sections.push({title:first.getDate()===1?cap(month):'Остаток '+first.toLocaleDateString('ru-RU',{day:'numeric',month:'long'}).replace(/^\d+\s/,''),from:iso(first),to:iso(at(year,m+1,0)),add:iso(first)})}
+  const later=new Set(active.filter(t=>t.date&&+t.date.slice(0,4)>year+1).map(t=>+t.date.slice(0,4)));
+  for(const y of [year+1,...[...later].sort()])sections.push({title:String(y),from:`${y}-01-01`,to:`${y}-12-31`,add:`${y}-01-01`});
+  sections.push({title:'Без даты',test:t=>!t.date,add:'',context:'none'});
+  for(const section of sections){
+    const items=active.filter(section.test||(t=>t.date&&t.date>=section.from&&t.date<=section.to));
+    if(!items.length&&section.hideEmpty)continue;
+    // Tapping a heading opens an inline composer under it (no modal); Просрочено has no date to add to.
+    const key=section.add===undefined?null:section.add||'none',open=key!==null&&composing===key;
+    const h=document.createElement('h2');h.className='group'+(section.today?' group-today':'');
+    const label=document.createElement(key===null?'span':'button');label.className='group-label';label.textContent=section.title;
+    if(key!==null){label.type='button';label.setAttribute('aria-expanded',String(open));label.onclick=()=>openComposer(key)}
+    h.append(label);$('tasks').append(h);
+    if(!items.length&&!open)continue;
+    const card=document.createElement('div');card.className='task-group';
+    if(open)card.append(composer(section));
+    card.append(...items.map(t=>row(t,section.context)));$('tasks').append(card)}
+}
+let composing=null;
+function composer(section){
+  const el=document.createElement('form');el.className='task composer';el.dataset.date=section.add;
+  el.innerHTML='<span class="check" aria-hidden="true"><span class="circle"></span></span><div class="composer-body"><input class="composer-title" placeholder="Новая задача" maxlength="250" enterkeyhint="done" aria-label="Название задачи"><div class="composer-meta"><input class="composer-date" type="date" aria-label="Дата"><input class="composer-time" type="time" aria-label="Время"></div></div>';
+  const date=el.querySelector('.composer-date'),time=el.querySelector('.composer-time');
+  if(section.context==='day')date.hidden=true;else date.value=section.add;
+  const syncTime=()=>{time.disabled=!(date.hidden||date.value);if(time.disabled)time.value=''};date.oninput=date.onchange=syncTime;syncTime();
+  el.onsubmit=event=>{event.preventDefault();commitComposer(true)};
+  el.addEventListener('keydown',event=>{if(event.key==='Escape'){event.preventDefault();closeComposer(false)}});
+  return el;
+}
+function focusComposer(){document.querySelector('.composer-title')?.focus({preventScroll:true})}
+function openComposer(key){
+  if(composing===key){focusComposer();return}
+  // Switching sections closes the old composer instantly; only the new one animates.
+  commitComposer(false,true);composing=key;render();
+  // Focus in the same tap, so mobile keyboards open.
+  focusComposer();dropIn(document.querySelector('.composer'));
+}
+// The composer drops out from under its heading and folds back under it on close: height runs to/from zero
+// (so sections below slide), while the content slides vertically. A card holding only the composer animates
+// whole; a composer row inside a card with tasks animates alone.
+const reducedMotion=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
+function foldComposer(form,opening,done){
+  const card=form.parentElement,target=card.children.length===1?card:form,cs=getComputedStyle(target),h=target.offsetHeight;
+  const duration=opening?420:320,easing=opening?'cubic-bezier(.32,.72,0,1)':'cubic-bezier(.4,0,.2,1)';
+  const shut={height:'0px'},full={height:`${h}px`};
+  for(const k of ['marginTop','marginBottom','paddingTop','paddingBottom','minHeight']){shut[k]='0px';full[k]=cs[k]}
+  const hidden={transform:`translateY(${-Math.round(h*.6)}px)`,opacity:0},shown={transform:'none',opacity:1};
+  target.style.overflow='hidden';
+  const fold=target.animate(opening?[shut,full]:[full,shut],{duration,easing,fill:opening?'none':'forwards'});
+  form.animate(opening?[hidden,shown]:[shown,hidden],{duration,easing,fill:opening?'none':'forwards'});
+  // Animation events can be skipped in a background tab, so a timer backs up the finish handler.
+  let settled=false;const settle=()=>{if(settled)return;settled=true;if(opening)target.style.overflow='';done?.()};
+  fold.onfinish=fold.oncancel=settle;setTimeout(settle,duration+80);
+}
+function dropIn(form){
+  if(!form||reducedMotion())return;
+  foldComposer(form,true,()=>{if(form.isConnected)form.scrollIntoView({block:'nearest'})});
+}
+// Close without a new task: fold the composer away, then redraw. With a typed title the task takes its place at once.
+function closeComposer(save,instant=false){
+  const el=document.querySelector('.composer');composing=null;
+  if(!el){render();return}
+  if(el.dataset.closing)return;
+  if(save&&el.querySelector('.composer-title').value.trim()){addFromComposer(el);render();return}
+  if(instant||reducedMotion()){render();return}
+  el.dataset.closing='1';el.querySelector('.composer-title').blur();
+  foldComposer(el,false,()=>{if(el.isConnected)render()});
+}
+function addFromComposer(el){
+  const title=el.querySelector('.composer-title').value.trim(),date=el.querySelector('.composer-date').hidden?el.dataset.date:el.querySelector('.composer-date').value,time=date?el.querySelector('.composer-time').value:'';
+  if(title)tasks.push({id:(crypto.randomUUID?.()||String(Date.now()+Math.random())),done:false,title,date,time,duration:30});
+  return title;
+}
+function commitComposer(keepOpen,instant=false){
+  if(!keepOpen){closeComposer(true,instant);return}
+  const el=document.querySelector('.composer');if(!el)return;
+  if(addFromComposer(el))render();
+  focusComposer();
+}
+// A tap anywhere outside the composer saves what was typed and closes it.
+document.addEventListener('pointerdown',event=>{if(composing!==null&&!event.target.closest('.composer,.group-label'))commitComposer(false)},true);
+function openEditor(t,preset){editing=t?.id||null;$('editorTitle').textContent=t?'Задача':'Новая задача';$('title').value=t?.title||'';$('date').value=t?.date||(t?'':preset??(view==='today'?day():''));$('time').value=t?.time||'';$('time').disabled=!$('date').value;$('delete').hidden=!t;$('completeEdit').hidden=!t;$('completeEdit').textContent=t?.done?'Вернуть в планы':'Отметить выполненной';$('endTime').value=t?.time?clockLabel(timeMinutes(t.time)+taskDuration(t)):'';syncEndTime();$('editor').showModal();setTimeout(()=>$('title').focus({preventScroll:true}),0)}
+$('cancel').onclick=()=>$('editor').close();$('completedToggle').onclick=()=>{showDone=!showDone;render()};$('date').onchange=()=>{$('time').disabled=!$('date').value;if(!$('date').value)$('time').value=''};
+document.querySelectorAll('[data-offset]').forEach(b=>b.onclick=()=>{$('date').value=day(Number(b.dataset.offset));$('time').disabled=false});$('clearDate').onclick=()=>{$('date').value='';$('time').value='';$('time').disabled=true};
+$('form').onsubmit=e=>{e.preventDefault();syncEndTime();const title=$('title').value.trim();if(!title){$('title').setCustomValidity('Введите название задачи');$('title').reportValidity();return}const data={title,date:$('date').value,time:$('date').value?$('time').value:'',duration:$('date').value&&$('time').value?((timeMinutes($('endTime').value)-timeMinutes($('time').value)+1440)%1440||1440):30};if(editing)Object.assign(tasks.find(t=>t.id===editing),data);else tasks.push({id:(crypto.randomUUID?.()||Array.from(crypto.getRandomValues(new Uint8Array(16)),v=>v.toString(16).padStart(2,"0")).join("")),done:false,...data});$('editor').close();if(!matches({...data}))view='all';render()};$('title').oninput=()=>$('title').setCustomValidity('');$('delete').onclick=()=>{rowCache.delete(editing);tasks=tasks.filter(t=>t.id!==editing);$('editor').close();render()};$('timezone').textContent='Часовой пояс: '+Intl.DateTimeFormat().resolvedOptions().timeZone;
+if(document.modelContext?.registerTool){try{document.modelContext.registerTool({name:'open_task_editor',description:'Открыть форму новой задачи в прототипе, без сохранения.',inputSchema:{type:'object',properties:{},additionalProperties:false},annotations:{readOnlyHint:false},execute(input){if(!input||typeof input!=='object'||Object.keys(input).length)throw new Error('Ожидается пустой объект');openEditor();return{opened:true}}})}catch{}}
+
+const timeMinutes=value=>{const [h,m]=value.split(':').map(Number);return h*60+m};
+const clockLabel=minutes=>`${String(Math.floor(minutes/60)%24).padStart(2,'0')}:${String(minutes%60).padStart(2,'0')}`;
+const taskDuration=t=>t.duration||30;
+function renderTimeline(active){
+  const untimed=active.filter(t=>!t.time);
+  {const section=document.createElement('section');section.className='day-unscheduled';const title=document.createElement('h2');title.textContent='Без времени';const list=document.createElement('div');list.className='task-group';list.append(...untimed.map(row),addRow(day()));section.append(title,list);$('tasks').append(section)}
+  const scroll=document.createElement('div');scroll.className='timeline-scroll';scroll.tabIndex=0;scroll.setAttribute('aria-label','Расписание на сегодня, 00:00–24:00');
+  const canvas=document.createElement('div');canvas.className='timeline';
+  for(let h=0;h<=24;h++){const line=document.createElement('div');line.className='hour-line';line.style.top=`${h*96}px`;if(h===24){line.style.height='0';line.classList.add('last-hour')}const label=document.createElement('span');label.className='hour-label';label.textContent=`${String(h).padStart(2,'0')}:00`;line.append(label);canvas.append(line)}
+  const entries=tasks.filter(t=>!t.done&&t.time&&(t.date===day()||(t.date===day(-1)&&timeMinutes(t.time)+taskDuration(t)>1440))).map(t=>{const rawStart=timeMinutes(t.time)+(t.date===day(-1)?-1440:0);return{t,start:Math.max(0,rawStart),end:Math.min(1440,rawStart+taskDuration(t))}}).sort((a,b)=>a.start-b.start||a.end-b.end);
+  let cluster=[],clusterEnd=-1;
+  function placeCluster(){const laneEnds=[];for(const e of cluster){let lane=laneEnds.findIndex(end=>end<=e.start);if(lane<0)lane=laneEnds.length;laneEnds[lane]=e.end;e.lane=lane}for(const e of cluster){const button=document.createElement('button');button.className='calendar-event'+(e.end-e.start<30?' short':'');button.style.top=`${e.start*1.6}px`;button.style.height=`${Math.max(1,(e.end-e.start)*1.6-2)}px`;button.style.left=`calc(${e.lane/laneEnds.length*100}% + 4px)`;button.style.width=`calc(${100/laneEnds.length}% - 8px)`;const title=document.createElement('strong');title.textContent=e.t.title;const time=document.createElement('small');time.textContent=`${e.t.time}–${clockLabel(timeMinutes(e.t.time)+taskDuration(e.t))}`;button.title=`${e.t.title}, ${time.textContent}`;button.setAttribute('aria-label',button.title);button.append(title,time);for(const edge of ['top','bottom']){const h=document.createElement('span');h.className=`resize-handle ${edge}`;h.setAttribute('aria-hidden','true');button.append(h)}bindCalendarDrag(button,e,scroll,canvas);canvas.append(button)}cluster=[]}
+  for(const e of entries){if(cluster.length&&e.start>=clusterEnd){placeCluster();clusterEnd=-1}cluster.push(e);clusterEnd=Math.max(clusterEnd,e.end)}if(cluster.length)placeCluster();
+  const now=new Date();const marker=document.createElement('div');marker.className='current-time';marker.style.top=`${(now.getHours()*60+now.getMinutes())*1.6}px`;canvas.append(marker);scroll.append(canvas);$('tasks').append(scroll);bindCalendarCreate(scroll,canvas);
+
+  requestAnimationFrame(()=>{scroll.scrollTop=Math.max(0,((entries[0]?.start??now.getHours()*60)-60)*1.6)});
+}
+function bindCalendarDrag(button,entry,scroll,canvas){
+  const task=entry.t,pixelsPerMinute=1.6;
+  let drag=null,suppressClick=false;
+  button.onclick=()=>{if(!suppressClick)openEditor(task)};
+  button.addEventListener('contextmenu',event=>event.preventDefault());
+  button.addEventListener('pointerdown',event=>{
+    if(event.button!==0||!event.isPrimary||drag)return;
+    const rawStart=timeMinutes(task.time)+(task.date===day(-1)?-1440:0);
+    const rawEnd=rawStart+taskDuration(task),mode=event.target.closest('.resize-handle.top')?'top':event.target.closest('.resize-handle.bottom')?'bottom':'move';
+    drag={id:event.pointerId,x:event.clientX,y:event.clientY,lastY:event.clientY,scroll:scroll.scrollTop,rawStart,rawEnd,start:rawStart,end:rawEnd,mode,active:false,frame:0};
+    suppressClick=false;
+    button.setPointerCapture(event.pointerId);
+    if(event.pointerType!=='mouse')drag.timer=setTimeout(activate,280);
+  });
+  function activate(){
+    if(!drag||drag.active)return;
+    drag.active=true;suppressClick=true;
+    clearTimeout(drag.timer);
+    const ghost=document.createElement('div');
+    ghost.className='calendar-origin';ghost.setAttribute('aria-hidden','true');
+    for(const key of ['top','height','left','width'])ghost.style[key]=button.style[key];
+    canvas.append(ghost);drag.ghost=ghost;
+    button.classList.add('dragging',drag.mode==='move'?'moving':'resizing');scroll.classList.add('is-dragging');
+    drag.frame=requestAnimationFrame(tick);
+  }
+  function update(){
+    const delta=(drag.lastY-drag.y+scroll.scrollTop-drag.scroll)/pixelsPerMinute;
+    const snap=value=>Math.round(value/5)*5;
+    if(drag.mode==='move'){drag.start=Math.max(Math.min(0,drag.rawStart),Math.min(1435,snap(drag.rawStart+delta)));drag.end=drag.start+(drag.rawEnd-drag.rawStart)}
+    else if(drag.mode==='top')drag.start=Math.max(Math.min(0,drag.rawStart),Math.min(drag.rawEnd-15,snap(drag.rawStart+delta)));
+    else drag.end=Math.min(1440,Math.max(drag.rawStart+15,snap(drag.rawEnd+delta)));
+    if(drag.start===drag.shownStart&&drag.end===drag.shownEnd)return;
+    drag.shownStart=drag.start;drag.shownEnd=drag.end;
+    const visibleStart=Math.max(0,drag.start),visibleEnd=Math.min(1440,drag.end);
+    button.style.top=`${visibleStart*pixelsPerMinute}px`;
+    button.style.height=`${Math.max(1,(visibleEnd-visibleStart)*pixelsPerMinute-2)}px`;
+    button.querySelector('small').textContent=`${clockLabel((drag.start+1440)%1440)}–${clockLabel((drag.end+1440)%1440)}`;
+  }
+  function tick(){
+    if(!drag?.active)return;
+    const box=scroll.getBoundingClientRect(),edge=48;
+    const speed=drag.lastY<box.top+edge?-Math.min(10,(box.top+edge-drag.lastY)/5):drag.lastY>box.bottom-edge?Math.min(10,(drag.lastY-box.bottom+edge)/5):0;
+    scroll.scrollTop+=speed;update();drag.frame=requestAnimationFrame(tick);
+  }
+  button.addEventListener('pointermove',event=>{
+    if(!drag||event.pointerId!==drag.id)return;
+    drag.lastY=event.clientY;
+    if(!drag.active&&event.pointerType==='mouse'&&Math.hypot(event.clientX-drag.x,event.clientY-drag.y)>5)activate();
+    if(drag.active)event.preventDefault();
+  });
+  function finish(commit){
+    if(!drag)return;
+    const state=drag;drag=null;
+    clearTimeout(state.timer);cancelAnimationFrame(state.frame);
+    state.ghost?.remove();button.classList.remove('dragging','moving','resizing');scroll.classList.remove('is-dragging');
+    if(button.hasPointerCapture(state.id))button.releasePointerCapture(state.id);
+    if(!state.active)return;
+    if(commit){task.date=day(state.start<0?-1:0);task.time=clockLabel((state.start+1440)%1440);task.duration=state.end-state.start}
+    const position=scroll.scrollTop;
+    render();requestAnimationFrame(()=>{const next=document.querySelector('.timeline-scroll');if(next)next.scrollTop=position});
+  }
+  button.addEventListener('pointerup',event=>{if(drag?.id===event.pointerId){if(drag.active){drag.lastY=event.clientY;update()}finish(true)}});
+  button.addEventListener('pointercancel',()=>finish(false));
+  button.addEventListener('lostpointercapture',()=>finish(false));
+  button.addEventListener('keydown',event=>{if(event.key==='Escape'&&drag){event.preventDefault();finish(false)}});
+}
+function bindCalendarCreate(scroll,canvas){
+  // Tap an empty slot for a 30-minute event; with a mouse, drag to set its length.
+  const pixelsPerMinute=1.6,minuteAt=y=>(y-canvas.getBoundingClientRect().top)/pixelsPerMinute;
+  let press=null;
+  canvas.addEventListener('pointerdown',event=>{
+    if(event.button!==0||!event.isPrimary||event.target.closest('.calendar-event'))return;
+    const start=Math.max(0,Math.min(1425,Math.floor(minuteAt(event.clientY)/15)*15));
+    press={id:event.pointerId,x:event.clientX,y:event.clientY,start,end:start+30,dragging:false};
+  });
+  canvas.addEventListener('pointermove',event=>{
+    if(!press||event.pointerId!==press.id)return;
+    if(!press.dragging&&event.pointerType==='mouse'&&Math.abs(event.clientY-press.y)>5){press.dragging=true;canvas.setPointerCapture(event.pointerId);press.draft=draft(press)}
+    if(press.dragging){const end=Math.min(1440,Math.max(press.start+15,Math.ceil(minuteAt(event.clientY)/15)*15));if(end!==press.end){press.end=end;place(press.draft,press)}}
+  });
+  canvas.addEventListener('pointerup',event=>{
+    if(!press||event.pointerId!==press.id)return;
+    const state=press;press=null;
+    if(!state.dragging&&Math.hypot(event.clientX-state.x,event.clientY-state.y)>8)return;
+    const block=state.draft||draft(state);
+    openEditor(null,day());$('time').value=clockLabel(state.start);$('time').disabled=false;$('endTime').value=clockLabel(state.end%1440);syncEndTime();
+    $('editor').addEventListener('close',()=>block.remove(),{once:true});
+  });
+  canvas.addEventListener('pointercancel',()=>{press?.draft?.remove();press=null});
+  function draft(state){const block=document.createElement('div');block.className='calendar-event calendar-draft';block.setAttribute('aria-hidden','true');block.innerHTML='<strong>Новое событие</strong><small></small>';canvas.append(block);place(block,state);return block}
+  function place(block,state){block.style.top=`${state.start*pixelsPerMinute}px`;block.style.height=`${(state.end-state.start)*pixelsPerMinute-2}px`;block.style.left='4px';block.style.width='calc(100% - 8px)';block.querySelector('small').textContent=`${clockLabel(state.start)}–${clockLabel(state.end%1440)}`}
+}
+const settings={reminders:true,digest:true};
+function renderSettings(){
+  // Prototype settings: switches work in memory, the rest is informational.
+  const group=(title,rows)=>{const h=document.createElement('h2');h.className='group';h.textContent=title;const card=document.createElement('div');card.className='task-group settings-card';card.append(...rows);$('tasks').append(h,card)};
+  const toggle=(key,label,hint)=>{const row=document.createElement('label');row.className='setting';row.innerHTML=`<span><span class="setting-name"></span>${hint?'<span class="setting-hint"></span>':''}</span><input type="checkbox" role="switch" class="switch" id="setting-${key}">`;row.querySelector('.setting-name').textContent=label;if(hint)row.querySelector('.setting-hint').textContent=hint;const input=row.querySelector('input');input.checked=settings[key];input.onchange=()=>{settings[key]=input.checked};return row};
+  const info=(label,value)=>{const row=document.createElement('div');row.className='setting';const name=document.createElement('span');name.className='setting-name';name.textContent=label;const val=document.createElement('span');val.className='setting-value';val.textContent=value;row.append(name,val);return row};
+  group('Уведомления',[toggle('reminders','Напоминания','В назначенное время'),toggle('digest','Сводка на день','Каждый день в 10:00')]);
+  group('Задачи',[info('Длительность по умолчанию','30 мин'),info('Часовой пояс',Intl.DateTimeFormat().resolvedOptions().timeZone)]);
+}
+function syncEndTime(){const enabled=Boolean($('date').value&&$('time').value);$('endTime').disabled=!enabled;if(!enabled){$('endTime').value='';$('endNote').textContent='';return}if(!$('endTime').value)$('endTime').value=clockLabel(timeMinutes($('time').value)+30);$('endNote').textContent=timeMinutes($('endTime').value)<=timeMinutes($('time').value)?'Окончание на следующий день':''}
+
+$('time').addEventListener('change',()=>{$('endTime').value='';syncEndTime()});
+$('endTime').addEventListener('change',syncEndTime);
+$('date').addEventListener('change',syncEndTime);
+$('clearDate').addEventListener('click',syncEndTime);
+document.querySelectorAll('[data-offset]').forEach(b=>b.addEventListener('click',syncEndTime));
+$('completeEdit').onclick=()=>{const t=tasks.find(t=>t.id===editing);if(t)t.done=!t.done;$('editor').close();render()};
+render();
+(function clock(){const marker=document.querySelector(".current-time");if(marker){const now=new Date();marker.style.top=`${(now.getHours()*60+now.getMinutes())*1.6}px`}setTimeout(clock,60000-Date.now()%60000+20)})();
+{// Scroll reveal: blocks near the bottom edge are smaller and lower, and settle into place as they scroll up.
+// Reads all positions first and writes afterwards, so a frame costs one layout however many blocks there are.
+const main=document.querySelector('main'),motion=matchMedia('(prefers-reduced-motion: reduce)');let frame=0,list=[];
+const shifts=new WeakMap();
+function reveal(){frame=0;const box=main.getBoundingClientRect(),zone=Math.min(360,box.height*.5);
+  // Fade the effect out near the end of the list, so the last blocks can fully settle.
+  const settle=Math.min(1,Math.max(0,(main.scrollHeight-main.scrollTop-main.clientHeight)/zone));
+  const tops=motion.matches?null:list.map(el=>el.getBoundingClientRect().top-(shifts.get(el)||0));
+  list.forEach((el,i)=>{let e=1;if(tops){const p=Math.min(1,Math.max(0,(box.bottom-tops[i])/zone));e=1-(1-p*p*(3-2*p))*settle}
+    const shift=(1-e)*40;if(shifts.get(el)===shift)return;shifts.set(el,shift);
+    el.style.transform=e<1?`translateY(${shift}px) scale(${.88+.12*e})`:'';el.style.opacity=e<1?.35+.65*e:'';el.style.willChange=e<1?'transform,opacity':''})}
+const queue=()=>{if(!frame)frame=requestAnimationFrame(reveal)};
+const collect=()=>{list=[...main.querySelectorAll('#tasks>.group,#tasks>.task-group,#completedToggle,#completed>.task-item')];queue()};
+main.addEventListener('scroll',queue,{passive:true});addEventListener('resize',queue);motion.addEventListener?.('change',queue);
+new MutationObserver(collect).observe(main,{childList:true,subtree:true});collect()}
+{const f=document.querySelector('footer'),a=document.querySelector('.app');new ResizeObserver(()=>a.style.setProperty('--footer-h',`${f.offsetHeight-24}px`)).observe(f)}
+{// Play the exit animation before a dialog actually closes (Отмена, Готово, Esc).
+const motion=matchMedia('(prefers-reduced-motion: reduce)');
+for(const dialog of document.querySelectorAll('dialog')){
+  const close=HTMLDialogElement.prototype.close,show=HTMLDialogElement.prototype.showModal;
+  // The page behind a sheet recedes slightly, like iOS card sheets.
+  // Reopening mid-exit first completes the pending close, otherwise the page stays receded.
+  dialog.showModal=function(){this.finishClose?.();document.documentElement.classList.add('sheet-open','sheet-busy');this.openedAt=performance.now();return show.call(this)};
+  dialog.close=function(value){
+    if(!this.open||this.classList.contains('closing'))return;
+    if(motion.matches){document.documentElement.classList.remove('sheet-open','sheet-busy');return close.call(this,value)}
+    this.classList.add('closing');
+    let done=false;const finish=this.finishClose=()=>{if(done)return;done=true;this.finishClose=null;this.classList.remove('closing');document.documentElement.classList.remove('sheet-busy');close.call(this,value)};
+    this.addEventListener('animationend',event=>{if(event.target===this)finish()},{once:true});
+    document.documentElement.classList.remove('sheet-open');
+    setTimeout(finish,450);
+  };
+  dialog.addEventListener('cancel',event=>{event.preventDefault();dialog.close()});
+}
+document.addEventListener('keydown',event=>{const open=document.querySelector('dialog[open]');if(event.key==='Escape'&&open){event.preventDefault();open.close()}});
+document.addEventListener('click',event=>{
+  const open=document.querySelector('dialog[open]');
+  if(!open||performance.now()-(open.openedAt||0)<350)return;
+  const box=open.getBoundingClientRect();
+  const outside=event.target===open?(event.clientX<box.left||event.clientX>box.right||event.clientY<box.top||event.clientY>box.bottom):!open.contains(event.target);
+  if(outside){event.preventDefault();event.stopPropagation();open.close()}
+},true);
+}
+
+function fitFrame(){document.documentElement.style.setProperty('--z',Math.min(1,(innerWidth-32)/402))}
+addEventListener('resize',fitFrame);fitFrame();
+</script>

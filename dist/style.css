@@ -164,6 +164,9 @@ main{margin-inline:calc(-1*var(--pad));padding-inline:var(--pad)}
 .composer-meta input{border:0;border-radius:10px;background:#F4F1F6;padding:5px 8px;font-size:13px;color:#6f6a74;min-height:30px}
 .composer-meta input:disabled{opacity:.45}
 .composer .circle{border-style:dashed}
+.app[data-view="all"] #tasks>.task-group:has(>.composer){margin-inline:calc(4px - var(--pad))}
+/* Card edge: 4px; card padding + row padding: 16px, aligning the input with headings. */
+.composer>.check{display:none}
 @media(hover:hover){.task-group>.composer:hover{background:none}}
 /* "Сегодня" leads the Plans list: 1.5× the section heading size, semibold. */
 .app[data-view="all"] #tasks>.group-today{font-size:21px;font-weight:600;color:#242424}

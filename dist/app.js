@@ -65,7 +65,8 @@ function openComposer(key){
 // whole; a composer row inside a card with tasks animates alone.
 const reducedMotion=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
 function foldComposer(form,opening,done){
-  const card=form.parentElement,target=card.children.length===1?card:form,cs=getComputedStyle(target),h=target.offsetHeight;
+  // Keep the fractional CSS height: offsetHeight rounds it and makes the next divider jump on finish.
+  const card=form.parentElement,target=card.children.length===1?card:form,cs=getComputedStyle(target),h=parseFloat(cs.height);
   const duration=opening?420:320,easing=opening?'cubic-bezier(.32,.72,0,1)':'cubic-bezier(.4,0,.2,1)';
   const shut={height:'0px'},full={height:`${h}px`};
   for(const k of ['marginTop','marginBottom','paddingTop','paddingBottom','minHeight']){shut[k]='0px';full[k]=cs[k]}

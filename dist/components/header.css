@@ -1,5 +1,5 @@
 /* Header — shared top bar for every tab. Everything about it lives in this file.
-   50px tall, 20px side padding from the screen edges, 20px title with an optional 12px caption above it; optional aside on the right. */
+   50px tall, 20px side padding from the screen edges, 20px title with an optional 12px caption below it; optional aside on the right. */
 .header{flex-shrink:0;height:50px;display:flex;align-items:center;justify-content:space-between;gap:12px;margin-inline:calc(-1*var(--pad,0px));padding:0 20px;background:#F4F1F6;position:relative;z-index:4}
 .header__text{min-width:0;display:flex;flex-direction:column;gap:2px}
 .header__caption{margin:0;font-size:12px;font-weight:500;line-height:14px;color:#8A8490;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}

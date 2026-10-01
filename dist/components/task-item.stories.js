@@ -1,6 +1,6 @@
-// TaskItem in the component showcase. Rows sit in a white card with the app's 20px side padding, as in the lists.
+// TaskItem in the component showcase. Card edges are inset 4px; text is inset 20px.
 (()=>{
-  const card=el=>{const c=document.createElement('div');c.style.cssText='margin:12px 20px;padding:2px;background:#fff;border-radius:24px';el.append(c);return c};
+  const card=el=>{const c=document.createElement('div');c.style.cssText='margin:12px 4px;padding:2px;background:#fff;border-radius:24px';el.append(c);return c};
   Showcase.register({
     name:'TaskItem',
     description:'Строка задачи: круглый чекбокс, название и необязательная строка с датой или временем. Скругление 22px, при наведении подкрашивается. Несколько строк в карточке разделены линией с отступами 14px.',

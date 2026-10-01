@@ -7,9 +7,9 @@
 .task-item button:focus-visible{outline:2px solid #777;outline-offset:4px}
 .task-item__check{width:34px;flex-shrink:0;padding:10px 5px}
 .task-item__circle{display:block;width:22px;height:22px;border:1.4px solid #aaa;border-radius:50%;position:relative}
-.task-item__body{flex:1;min-width:0;padding:8px 0;text-align:left}
+.task-item__body{flex:1;min-width:0;padding:8px 0;text-align:left;display:flex;flex-direction:column;align-items:flex-start;gap:6px}
 .task-item__title{display:block;font-size:16px;line-height:1.4;overflow-wrap:anywhere}
-.task-item__meta{display:block;margin-top:5px;font-size:12px;color:#777}
+.task-item__meta{display:block;max-width:100%;min-height:30px;padding:5px 8px;border-radius:10px;background:#F4F1F6;font-size:13px;color:#6f6a74;overflow-wrap:anywhere}
 .task-item--done .task-item__circle{background:#555;border-color:#555}
 .task-item--done .task-item__circle:after{content:'✓';position:absolute;inset:0;color:#fff;font-size:15px;line-height:20px;text-align:center}
 .task-item--done .task-item__title{text-decoration:line-through;color:#999}
